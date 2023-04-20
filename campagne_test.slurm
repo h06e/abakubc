@@ -10,7 +10,7 @@
 #SBATCH --nodelist=hengst
 ##SBATCH --mail-user=robin.valmalette@ens-paris-saclay.fr
 ##SBATCH --mail-type=END
-#cd
-#code -r $SLURM_JOB_NAME.o$SLURM_JOB_ID
-cd /usrtmp/valmalette/abakubc_beta/
+##cd
+##code -r $SLURM_JOB_NAME.o$SLURM_JOB_ID
+cd /usrtmp/valmalette/abakubc/
 python3 src/runner.py $SLURM_NTASKS campagne_test
