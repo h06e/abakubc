@@ -1,0 +1,81 @@
+{
+    "workbench.editorAssociations": {
+        "*.npy": "default"
+    },
+    "workbench.colorTheme": "Monokai Dimmed",
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "markdown.marp.enableHtml": true,
+    "python.autoComplete.extraPaths": [
+        "/usr/local/abaqus-lmt/2021/EstProducts/linux_a64/code/python2.7/lib/"
+    ],
+    "python.analysis.extraPaths": [
+        "/usr/local/abaqus-lmt/2021/EstProducts/linux_a64/code/python2.7/lib/"
+    ],
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "pandoc.pdfOptString": "--from markdown --template eisvogel --listings -N",
+    "logFileHighlighter.customPatterns": [
+
+        {
+            "pattern": "abaqus_2021 job",
+            "foreground": "#ff9925",
+            "background": "#000000"
+        },
+        {
+            "pattern": "abaqus_2021 cae",
+            "foreground": "#f3ff47",
+            "background": "#000000"
+        },
+        {
+            "pattern": "COMMAND",
+            "foreground": "#fa19af"
+        },
+        {
+            "pattern": "TEST",
+            "foreground": "#00ff00"
+        },
+        {
+            "pattern": "INFO",
+            "foreground": "#27f5e4"
+        },
+        {
+            "pattern": "__main__",
+            "foreground": "#2600ff"
+        },
+        {
+            "pattern": "COMPLETED",
+            "foreground": "#1eff00"
+        },
+        {
+            "pattern": "termination",
+            "foreground": "#1eff00"
+        },
+        {
+            "pattern": "scp",
+            "foreground": "#873e99"
+        },
+        {
+            "pattern": "main_extract.py",
+            "foreground": "#6e46ff"
+        },
+        {
+            "pattern": "main_auto_compute.py",
+            "foreground": "#85668d"
+        },
+        {
+            "pattern": "error",
+            "foreground": "#ff0000"
+        },
+        {
+            "pattern": "full_runner.py",
+            "foreground": "#4f32f0"
+        },
+        {
+            "pattern": "\\make.*",
+            "foreground": "#555555"
+        }
+    ],
+    "security.workspace.trust.untrustedFiles": "open",
+    "jupyter.askForKernelRestart": false
+}
