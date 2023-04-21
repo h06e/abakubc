@@ -38,7 +38,7 @@ def get_job_name_PBC_KUBC(test):
 
 def run_script(script: str, arg: list):
     """Don't add .py to the script name"""
-    logging.debug(' '.join(['abaqus_2021', 'cae', f'noGUI={script}.py', '--']+arg))
+    logging.debug(' '.join(['abaqus_2021', 'cae', f'noGUI={script}.py', '--']+[f'"{i}"' for i in arg]))
     check_call(['abaqus_2021', 'cae', f'noGUI={script}.py', '--']+arg)
 
 
@@ -193,42 +193,35 @@ def run_test(test):
 # *                 Main                    *
 # *******************************************
 
+# * reset the folder
+# ! DEBUG MODE
+DEBUG=True
+if DEBUG:
+    for file in os.listdir(os.getcwd()):
+        if not os.path.isfile(file) and file not in ['utilities', 'src', '.git']:
+            shutil.rmtree(file)
+time.sleep(2)
 
 N_TASK = int(sys.argv[-2])
 campagne_name = sys.argv[-1]
 paths, tests_to_run = func.init_campagne(campagne_name)
-DEBUG=True
 remove_files(paths[ROOT], types_to_remove=['lck', 'tmp'])
-
-
-# * reset the folder
-if DEBUG:
-    list_of_campaign=[]
-    for file in os.listdir(os.getcwd()):
-        if file.split('.')[-1]=='csv':
-            list_of_campaign.append(file.split('.')[:-1][0])
-
-    print(f'{list_of_campaign=}')
-    for file in os.listdir(os.getcwd()):
-        if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git']:
-            shutil.rmtree(file)
-
 
 with Pool(processes=N_TASK-1) as pool:
     results = pool.imap_unordered(run_test, tests_to_run)
     for r in results:
         print(f'Status: {r}')
 
-# * Remove eventual folder created by abq
-list_of_campaign=[]
-for file in os.listdir(os.getcwd()):
-    if file.split('.')[-1]=='csv':
-        list_of_campaign.append(file.split('.')[:-1][0])
+# # * Remove eventual folder created by abq
+# list_of_campaign=[]
+# for file in os.listdir(os.getcwd()):
+#     if file.split('.')[-1]=='csv':
+#         list_of_campaign.append(file.split('.')[:-1][0])
 
-print(f'{list_of_campaign=}')
-for file in os.listdir(os.getcwd()):
-    if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git', 'theory_matrix_bank', 'porosity', 'sample_bank']:
-        shutil.rmtree(file)
+# print(f'{list_of_campaign=}')
+# for file in os.listdir(os.getcwd()):
+#     if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git', 'theory_matrix_bank', 'porosity', 'sample_bank']:
+#         shutil.rmtree(file)
 
 # * Essaye d'envoyer une notification de bureau
 try:

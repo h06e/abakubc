@@ -27,7 +27,7 @@ def clean_corners(test):
     g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
     s.setPrimaryObject(option=STANDALONE)
     s.Line(point1=(0.0, 0.0), point2=(0.0, 7.5))
-    if test['corner_cleaner']=='ADV_SHEAR':
+    if True: # ? test['corner_cleaner']=='ADV_SHEAR'
         ptc=(35.0,35.0)
         s.Line(point1=(0.0, 7.5), point2=(7.5/2-2, -(7.5/2-2)+7.5))
         p=s.Line(point1=(7.5/2-2, -(7.5/2-2)+7.5), point2=ptc)
@@ -115,7 +115,7 @@ def clean_corners_2d(test):
     g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
     s.setPrimaryObject(option=STANDALONE)
     s.Line(point1=(0.0, 0.0), point2=(0.0, 7.5))
-    if test['corner_cleaner']=='ADV_SHEAR':
+    if True: # ? test['corner_cleaner']=='ADV_SHEAR'
         ptc=(35.0,35.0)
         s.Line(point1=(0.0, 7.5), point2=(7.5/2-2, -(7.5/2-2)+7.5))
         p=s.Line(point1=(7.5/2-2, -(7.5/2-2)+7.5), point2=ptc)

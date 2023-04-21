@@ -10,7 +10,7 @@ try:
 except:
     pass
 from constants import *
-import homogeneBoundary
+import th_gen.homogeneBoundary as homogeneBoundary
 
 def log(message):
     print >> sys.__stdout__, message

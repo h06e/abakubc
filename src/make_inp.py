@@ -57,8 +57,8 @@ if '{}.sat'.format(geometry_name) not in os.listdir(paths[SAMPLE_BANK_DIR]) or F
         eval(test['sample_name']).main(paths=paths, test=test, skip_cylinders=skip_cylinders)
     except NameError:
         geo_topo_known=False
-    if test['corner_cleaner'] != None:
-        make_corner_cleaner.clean_corners(test)
+    if test['corner_cleaner'] :
+        make_corner_cleaner.main_clean_corners(test)
     if geo_topo_known:
         mdb.models['Model-1'].parts['specimen'].writeAcisFile(os.path.join(paths[SAMPLE_BANK_DIR], '{}.sat'.format(geometry_name)), 24)
         a = mdb.models['Model-1'].rootAssembly
