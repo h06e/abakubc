@@ -13,6 +13,11 @@ from connectorBehavior import *
 from math import *
 from constants import *
 
+def main_clean_corners(test):
+    if test['dim']==3:
+        clean_corners(test)
+    else:
+        clean_corners_2d(test)
 
 def clean_corners(test):
     model=mdb.models['Model-1']

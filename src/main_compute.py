@@ -12,7 +12,7 @@ import csv
 import os
 from func import manipulation
 from post_compute import operation
-from post_compute.config import *
+from post_compute.post_config import *
 import os
 import matplotlib.cbook as cbook
 import json

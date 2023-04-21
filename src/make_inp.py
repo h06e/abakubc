@@ -14,14 +14,10 @@ from geometry import monolithic
 from geometry import honey
 from geometry import kagome
 from geometry import hexachiral
-from geometry import carre 
+from geometry import rectangle
 import time
 import csv
 from constants import *
-
-# ! ATTENTION PYTHON 2 !!!!!!!!!
-# * For beguging, turn force_gen to True to force the generation of the specimen and not take the one existing in the sample_bank
-FORCE_GEN=False
 
 
 def log(message):
@@ -38,6 +34,10 @@ for i in test:
             pass
 
 paths = eval(sys.argv[-1])
+
+# ! ATTENTION PYTHON 2 !!!!!!!!!
+# * For beguging, turn force_gen to True to force the generation of the specimen and not take the one existing in the sample_bank
+FORCE_GEN=test['debug']
 
 Mdb()
 session.journalOptions.setValues(

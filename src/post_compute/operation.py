@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from post_compute.config import *
+from post_compute.post_config import *
 import matplotlib.pyplot as plt
 from math import *
 import sys

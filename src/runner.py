@@ -193,10 +193,26 @@ def run_test(test):
 # *                 Main                    *
 # *******************************************
 
+
 N_TASK = int(sys.argv[-2])
 campagne_name = sys.argv[-1]
 paths, tests_to_run = func.init_campagne(campagne_name)
+DEBUG=True
 remove_files(paths[ROOT], types_to_remove=['lck', 'tmp'])
+
+
+# * reset the folder
+if DEBUG:
+    list_of_campaign=[]
+    for file in os.listdir(os.getcwd()):
+        if file.split('.')[-1]=='csv':
+            list_of_campaign.append(file.split('.')[:-1][0])
+
+    print(f'{list_of_campaign=}')
+    for file in os.listdir(os.getcwd()):
+        if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git']:
+            shutil.rmtree(file)
+
 
 with Pool(processes=N_TASK-1) as pool:
     results = pool.imap_unordered(run_test, tests_to_run)
