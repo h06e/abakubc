@@ -228,8 +228,8 @@ mdb.Job(name=job_name, model='Model-1', description='', type=ANALYSIS,
         memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
         modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=12,
-        numDomains=12, numGPUs=0)
+        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+        numGPUs=0)
 
 
 # * Brute force the writing of the input file because Abq sometime return an error

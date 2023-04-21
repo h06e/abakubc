@@ -20,7 +20,7 @@ for i in test:
         test[i] = None
     else:
         try:
-            test[i] = eval(test[i]) if i != 'sample_name' else test[i]
+            test[i] = eval(test[i]) if i not in ['sample_name', 'status', 'comment', 'err'] else test[i]
         except NameError:
             pass
 
@@ -145,9 +145,9 @@ a = mdb.models['Model-1'].rootAssembly
 a.ReferencePoint(point=(0.0, -10.0, 0.0))
 
 import sys
-sys.path.insert(8, 
-    r'/u/valmalette/abaqus_plugins/homtools0.9/Contraints_generation/Materials')
-import periodicBoundary; periodicBoundary=periodicBoundary.PeriodicBoundary()
+
+import src.th_gen.periodicBoundary as periodicBoundary
+periodicBoundary=periodicBoundary.PeriodicBoundary()
 periodicBoundary.__init__()
 
 a = mdb.models['Model-1'].rootAssembly
@@ -224,8 +224,8 @@ mdb.Job(name=job_name, model='Model-1', description='', type=ANALYSIS,
     memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, 
     explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, 
     modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', 
-    scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=12, 
-    numDomains=12, numGPUs=0)
+    scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+      numGPUs=0)
 
 # * Brute force the writing of the input file because Abq sometime return an error
 inp_is_written=False

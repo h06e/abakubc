@@ -38,6 +38,7 @@ def get_job_name_PBC_KUBC(test):
 
 def run_script(script: str, arg: list):
     """Don't add .py to the script name"""
+    logging.debug(' '.join(['abaqus_2021', 'cae', f'noGUI={script}.py', '--']+arg))
     check_call(['abaqus_2021', 'cae', f'noGUI={script}.py', '--']+arg)
 
 
@@ -45,9 +46,25 @@ def sumbit_job(job_list: list[str], scratch: str, number_of_cpu=1):
     for job in job_list:
         if job:
             logging.info(f'Submitting the job {job}')
-            check_call(['abaqus_2021', 'interactive',
-                        f'job={job}', f'cpus={number_of_cpu}', f'scratch={scratch}'])
+            try:
+                logging.debug(' '.join(['abaqus_2021', 'interactive', f'job={job}', f'cpus={number_of_cpu}', f'scratch={scratch}']))
+                check_call(['abaqus_2021', 'interactive',
+                            f'job={job}', f'cpus={number_of_cpu}', f'scratch={scratch}'])
+            except:
+                logging.warning(f'{job} couldn\'t be completed on the first attempt')
+                submit_job_custom(job,number_of_cpu,scratch)
 
+
+def submit_job_custom(job,number_of_cpu,scratch):
+    """Sometimes, the computation failed. remove other files related to the test can help"""
+    for file in os.listdir(paths[ROOT]):
+        if (job in file) and file.split('.')[-1]!='inp':
+            try:
+                os.remove(file)
+            except:
+                pass
+    check_call(['abaqus_2021', 'interactive',
+                            f'job={job}', f'cpus={number_of_cpu}', f'scratch={scratch}'])
 
 def init_log():
     i = 1
@@ -55,7 +72,7 @@ def init_log():
     time.sleep(random())
     while f'{i:03.0f}_log.log' in os.listdir(os.getcwd()):
         i += 1
-    logging.basicConfig(filename=f'{i:03.0f}_log.log', encoding='utf-8', level=logging.INFO,
+    logging.basicConfig(filename=f'{i:03.0f}_log.log', encoding='utf-8', level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(message)s', filemode='w')
 
 
@@ -70,6 +87,21 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
             except:
                 pass
 
+def move_file_duto_error (test, paths, KUBC_name=None, PBC_name=None):
+    try: 
+        os.mkdir(test['test_id'])
+    except:
+        pass
+
+    for file in os.listdir(paths[ROOT]):
+        if test['test_id'] in file or         \
+                (KUBC_name and KUBC_name in file) or\
+                (PBC_name and PBC_name in file):
+            try:
+                shutil.move(file, os.path.join(test['test_id'],file))
+            except:
+                pass
+
 # * -------------------------------------------
 
 def run_test(test):
@@ -81,7 +113,7 @@ def run_test(test):
                    [str(test).replace(' ', ''), str(paths).replace(' ', '')])
     except Exception as e:
         logging.error('Error while generating the main test')
-        remove_files_during_run(test, paths)
+        move_file_duto_error (test, paths)
         return 1
     # * generate the inp of KUBC and PBC id needed
     KUBC_name, PBC_name = get_job_name_PBC_KUBC(test)
@@ -94,8 +126,8 @@ def run_test(test):
             run_script(f'src/th_gen/make_inp_KUBC_{test["sample_name"]}', [
                 str(test).replace(' ', ''), str(paths).replace(' ', '')])
         except Exception as e:
-            logging.error('Error while generating the PBC')
-            remove_files_during_run(test, paths, KUBC_name, PBC_name)
+            logging.error('Error while generating the KUBC')
+            move_file_duto_error (test, paths, KUBC_name)
             return 2
     else:
         KUBC_name = None
@@ -108,8 +140,8 @@ def run_test(test):
             run_script(f'src/th_gen/make_inp_PBC_{test["sample_name"]}', [
                 str(test).replace(' ', ''), str(paths).replace(' ', '')])
         except Exception as e:
-            logging.error('Error while generating the KUBC')
-            remove_files_during_run(test, paths, KUBC_name, PBC_name)
+            logging.error('Error while generating the PBC')
+            move_file_duto_error (test, paths, KUBC_name, PBC_name)
             return 3
     else:
         PBC_name = None
@@ -124,7 +156,7 @@ def run_test(test):
         sumbit_job(job_list=job_list, scratch=paths[ROOT])
     except Exception as e:
         logging.error('Error while submiting the job')
-        #remove_files_during_run(test, paths, KUBC_name, PBC_name)
+        move_file_duto_error (test, paths, KUBC_name, PBC_name)
         return 4
     # * Extracting the data
     try:

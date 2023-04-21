@@ -37,7 +37,7 @@ def proceed_computation(paths, test):
             test[i]=None
         else:
             try:
-                test[i] = eval(test[i]) if i!='sample_name' else test[i]
+                test[i] = eval(test[i]) if i not in ['sample_name', 'status', 'comment', 'err'] else test[i]
             except NameError:
                 pass
 
@@ -200,7 +200,7 @@ def proceed_computation(paths, test):
 
     
     df = pd.read_csv(f'{campagne_name}.csv', delimiter=';')
-    df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m-%d-%H%M")
+    df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m_%d_%H%M")
     df.loc[index_test, 'err']=str(global_deviation.tolist()).replace('[','').replace(']','')
     df.to_csv(f'{campagne_name}.csv', index=False, sep=';')
 

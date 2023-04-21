@@ -1,7 +1,9 @@
-from abaqus import *
-from abaqusConstants import *
-from caeModules import *
-
+try:
+    from abaqus import *
+    from abaqusConstants import *
+    from caeModules import *
+except:
+    pass
 """Keys for dicts"""
 ROOT='root'
 SRC='src'

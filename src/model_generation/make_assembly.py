@@ -375,8 +375,8 @@ def assemble_model(test, paths, step_list):
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2,
-            numDomains=2, numGPUs=0)
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+            numGPUs=0)
 
 
 def Create_Step_2d(model, step_name, previous_step, initial_inc, max_inc, min_inc, max_num_inc, NL_ON_OFF):
@@ -730,14 +730,14 @@ def assemble_model_2d(test, paths, step_list):
                                         set_name, avg_stress_set_name)
 
     model.rootAssembly.regenerate()
-
+    
     mdb.Job(name=test['test_id'], model='Model-1', description='', type=ANALYSIS,
             atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=2,
-            numDomains=2, numGPUs=0)
+            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+            numGPUs=0)
 
     # mdb.saveAs(pathName='mdb')
     # exit()

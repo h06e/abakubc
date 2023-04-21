@@ -1,10 +1,29 @@
 *.pyc
 *.log
+*.cae
+*.com
+*.dat
+*.inp
+*.jnl
+*.msg
+*.odb
+*.prt
+.~lock*
+*.cid
+*.rec
+*.rpy*
+*.SMABulk*
+*.stt
+*.lck
+*.simlog
+*.mdl
+
 
 campagne_test/
 porosity/
 sample_bank/
 theory_matix_bank/
+theory_matrix_bank/
 
 src/func/__pycache__/
 src/__pycache__/
