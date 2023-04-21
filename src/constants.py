@@ -59,5 +59,5 @@ def log(message):
     print >> sys.__stdout__, message
 
 """ List of geo which need PBC and or KUBC additionnal computation"""
-model_with_KUBC_th=['honey']
-model_with_PBC_th=['honey']
+model_with_KUBC_th=['honey', 'rectangle']
+model_with_PBC_th=['honey', 'rectangle']

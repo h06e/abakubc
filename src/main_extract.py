@@ -26,11 +26,11 @@ def proceed_extract_bis(paths, test, th_KUBC_name, th_PBC_name):
     # * Dépouillement du PBC et KUBC th s'il(s) existe(nt)
     if th_KUBC_name:
         logging.info('Extracting and commputing the KUBC')
-        run_script(f'src/th_extract/extract_{test["sample_name"]}', [
+        run_script(f'src/th_extract/extract_th', [
                    str(test).replace(' ', ''), th_KUBC_name])
     if th_PBC_name:
         logging.info('Extracting and commputing the PBC')
-        run_script(f'src/th_extract/extract_{test["sample_name"]}', [
+        run_script(f'src/th_extract/extract_th', [
                    str(test).replace(' ', ''), th_PBC_name])
     # * Cas particulier où le pbc ou kubc tournent sur un autre cpu qui n'a pas terminé
     KUBC_name, PBC_name = get_job_name_PBC_KUBC(test)

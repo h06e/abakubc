@@ -140,9 +140,9 @@ p = mdb.models['Model-1'].parts['Part-1']
 a.Instance(name='Part-1-1', part=p, dependent=ON)
 
 a = mdb.models['Model-1'].rootAssembly
-a.ReferencePoint(point=(0.0, -5.0, 0.0))
+a.ReferencePoint(point=(0.0, -50.0, 0.0))
 a = mdb.models['Model-1'].rootAssembly
-a.ReferencePoint(point=(0.0, -10.0, 0.0))
+a.ReferencePoint(point=(0.0, -60.0, 0.0))
 
 import sys
 
@@ -152,11 +152,11 @@ periodicBoundary.__init__()
 
 a = mdb.models['Model-1'].rootAssembly
 r1 = a.referencePoints
-pickedRP1 = r1[4]
+pickedRP1 = r1.findAt((0, -50.0, 0.0),)
 periodicBoundary.setRefpoint1(RP1=pickedRP1)
 a = mdb.models['Model-1'].rootAssembly
 r11 = a.referencePoints
-pickedRP2 = r11[5]
+pickedRP2 = r11.findAt((0, -60.0, 0.0),)
 periodicBoundary.setRefpoint2(RP2=pickedRP2)
 a = mdb.models['Model-1'].rootAssembly
 e1 = a.instances['Part-1-1'].edges
@@ -169,13 +169,7 @@ periodicBoundary.setGroup2(set2=pickedSet2)
 periodicBoundary.Periodic(is_smallstrain=True, dim=2, Vx=0, Vy=2*(aa+2*bb), Vz=0)
 
 periodicBoundary.__init__()
-a = mdb.models['Model-1'].rootAssembly
-r1 = a.referencePoints
-pickedRP1 = r1[4]
 periodicBoundary.setRefpoint1(RP1=pickedRP1)
-a = mdb.models['Model-1'].rootAssembly
-r11 = a.referencePoints
-pickedRP2 = r11[5]
 periodicBoundary.setRefpoint2(RP2=pickedRP2)
 a = mdb.models['Model-1'].rootAssembly
 e1 = a.instances['Part-1-1'].edges
@@ -193,15 +187,15 @@ mdb.models['Model-1'].StaticStep(name='Step-3', previous='Step-2')
 
 a = mdb.models['Model-1'].rootAssembly
 r1 = a.referencePoints
-refPoints1=(r1[4], )
-region = a.Set(referencePoints=refPoints1, name='Set-3067')
+refPoints1=(pickedRP1, )
+region = a.Set(referencePoints=refPoints1, name='Set-REF_PT_1')
 mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='Step-1', 
     region=region, u1=0.02, u2=0.0, ur3=UNSET, amplitude=UNSET, fixed=OFF, 
     distributionType=UNIFORM, fieldName='', localCsys=None)
 a = mdb.models['Model-1'].rootAssembly
 r1 = a.referencePoints
-refPoints1=(r1[5], )
-region = a.Set(referencePoints=refPoints1, name='Set-3068')
+refPoints1=(pickedRP2, )
+region = a.Set(referencePoints=refPoints1, name='Set-REF_PT_2')
 mdb.models['Model-1'].DisplacementBC(name='BC-2', createStepName='Step-1', 
     region=region, u1=0.0, u2=0.0, ur3=UNSET, amplitude=UNSET, fixed=OFF, 
     distributionType=UNIFORM, fieldName='', localCsys=None)

@@ -198,7 +198,7 @@ homogeneBoundary.Effective(is_smallstrain=True, dim=2)
 
 a = mdb.models['Model-1'].rootAssembly
 r1 = a.referencePoints
-refPoints1 = (r1[4], )
+refPoints1 = (r1.findAt((0, -10.0, 0.0),), )
 region = a.Set(referencePoints=refPoints1, name='Set-2295')
 
 mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='Step-1',
@@ -206,7 +206,7 @@ mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='Step-1',
                                      distributionType=UNIFORM, fieldName='', localCsys=None)
 a = mdb.models['Model-1'].rootAssembly
 r1 = a.referencePoints
-refPoints1 = (r1[5], )
+refPoints1 = (r1.findAt((0, -20.0, 0.0),), )
 region = a.Set(referencePoints=refPoints1, name='Set-2296')
 mdb.models['Model-1'].DisplacementBC(name='BC-2', createStepName='Step-1',
                                      region=region, u1=0.0, u2=0.0, ur3=UNSET, amplitude=UNSET, fixed=OFF,

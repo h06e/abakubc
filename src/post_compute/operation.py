@@ -162,15 +162,18 @@ def get_porosity (test,paths):
     if test['sample_name']=='monolithic':
         return 0.0
     elif test['sample_name']=='honey':
-        """ L=test['geo_parameters'].split('/')[0]
+        L=test['geo_parameters'].split('/')[0]
         width=test['geo_parameters'].split('/')[1]
         porosity=((L/2-width/2)/(L/2))**2
-        return porosity """
+        return porosity
+    elif test['sample_name']=='rectangle':
+        width_1, width_2, space_1, space_2=test['geo_parameters']
+        return (space_1-width_1)*(space_2-width_2)/(space_1*space_2)
+    else:
         with open(os.path.join(paths[POROSITY],'_'.join([test['sample_name'],str(test['geo_parameters'])])+'.json'),'r') as f:
             p=json.load(f)
             return float(p)
 
-    else : exit('Geometry not supported, pls modify operation.py')
 
 def compute_error(K1,K2):
     s=(K1[0,0]-K2[0,0])**2+(K1[1,1]-K2[1,1])**2+(K1[2,2]-K2[2,2])**2+ \

@@ -38,14 +38,20 @@ e12=0.02 # Gamma12
 eps12=e12/2
 
 L=test['geo_parameters'][0]
-log(['OOOOOOOOOOOOOOOOOOOOO',file_name])
+
 
 if file_name.split('_')[0]=='KUBC':
     area=288*288
 else:
-    aa=L/2/tan(pi/3)
-    bb=L/2*tan(pi/6)
-    area=2*(aa+2*bb)*L
+    if test['sample_name']=='honey':
+        aa=L/2/tan(pi/3)
+        bb=L/2*tan(pi/6)
+        area=2*(aa+2*bb)*L
+    elif test['sample_name']=='rectangle':
+        width_1, width_2, space_1, space_2=test['geo_parameters']
+        area=space_1*space_2
+    else:
+        raise ValueError
 
 #-------------
 current_path=os.path.abspath(os.getcwd())
