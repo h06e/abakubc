@@ -2,10 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from func import manipulation
-from post_compute import reader,operation
+from post_compute import operation
 from post_compute.config import *
 import os
 import json
+
+from post_compute import post_reader
 
 
 def proceed_compute(TEST_ID):
@@ -23,12 +25,12 @@ def proceed_compute(TEST_ID):
         
     if proceed_full_computation:
         test=campagne[index_test]
-        time_step, extracted_disp_and_force = reader.read_panto_data(folder_name)
+        time_step, extracted_disp_and_force = post_reader.read_panto_data(folder_name)
         thickness=float(test['thickness'])
         porosity=operation.get_porosity(test)
         print(f'Porosity of : {porosity}')
         cylinders_raw,cylinders = operation.assign_cylinders(extracted_disp_and_force)
-        number_of_step=reader.get_number_of_step(test)
+        number_of_step=post_reader.get_number_of_step(test)
         force_panto=[]
         idx_of_steps=[]
         for n_step in range(1,number_of_step+1):

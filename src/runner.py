@@ -203,6 +203,17 @@ with Pool(processes=N_TASK-1) as pool:
     for r in results:
         print(f'Status: {r}')
 
+# * Remove eventual folder created by abq
+list_of_campaign=[]
+for file in os.listdir(os.getcwd()):
+    if file.split('.')[-1]=='csv':
+        list_of_campaign.append(file.split('.')[:-1][0])
+
+print(f'{list_of_campaign=}')
+for file in os.listdir(os.getcwd()):
+    if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git', 'theory_matrix_bank', 'porosity', 'sample_bank']:
+        shutil.rmtree(file)
+
 # * Essaye d'envoyer une notification de bureau
 try:
     import notify2

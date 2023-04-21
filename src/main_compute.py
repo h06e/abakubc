@@ -1,15 +1,17 @@
 import sys
+
 try:
     sys.path.append("src")
 except:
     pass
+from post_compute import post_reader
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import csv
 import os
 from func import manipulation
-from post_compute import reader, operation
+from post_compute import operation
 from post_compute.config import *
 import os
 import matplotlib.cbook as cbook
@@ -46,12 +48,12 @@ def proceed_computation(paths, test):
     index_test = next((idx for (idx, t) in enumerate(
         campagne) if t['test_id'] == test['test_id']), None)
     res_folder = os.path.join(paths[RES_DIR], test['test_id'])
-    time_step, extracted_disp_and_force = reader.read_panto_data(res_folder)
+    time_step, extracted_disp_and_force = post_reader.read_panto_data(res_folder)
     thickness = test['thickness'] if test['thickness'] != 0 else 1.0
     porosity = operation.get_porosity(test, paths)
     cylinders_raw, cylinders = operation.assign_cylinders(
         extracted_disp_and_force)
-    number_of_step = reader.get_number_of_step(test)
+    number_of_step = post_reader.get_number_of_step(test)
     force_panto = []
     idx_of_steps = []
     for n_step in range(1, number_of_step+1):
@@ -182,13 +184,27 @@ def proceed_computation(paths, test):
             data['K_plane_stress_KUBC'] = K_plane_stress_KUBC
             Ks.append(np.array(K_plane_stress_KUBC))
         
-
     Ks.append(K_field_dic)
     Ks.append(K_panto_dic)
 
     global_deviation = operation.compute_total_deviation_matrix(Ks)
     data['global_err']=global_deviation.tolist()
     
+    # * Add the skiped cylinder in final_data.json
+
+    dim=test['dim']
+    if dim == 3:
+        c_dim=''
+    else:
+        c_dim='2d'
+    geometry_name=c_dim+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameters', 'trans_rot', 'thickness', 'corner_cleaner']])
+    skip_cylinders = []
+    with open(os.path.join(paths[SAMPLE_BANK_DIR], '{}_skip_cyl.csv'.format(geometry_name)), "r") as f:
+        reader = csv.reader(f, delimiter=',')
+        for row in reader:
+            skip_cylinders.append([int(i) for i in row])
+    data['skipped_cyl']=skip_cylinders
+
     with open(os.path.join(res_folder,'final_data.json'), "w") as fp:
         json.dump(data, fp, indent=4, separators=(", ", ": "), sort_keys=True)  # encode dict into JSON
 

@@ -17,7 +17,15 @@
 *.lck
 *.simlog
 *.mdl
+*.cax
+*.SMAFocus
+*.sim
+*.023
 
+!src/ressources/support_2d.sat
+!src/ressources/support.sat
+
+test.py
 
 campagne_test/
 porosity/
