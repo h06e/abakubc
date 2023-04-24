@@ -1,13 +1,15 @@
+import sys
+try:
+    sys.path.append("../src")
+except:
+    pass
+import th_gen.periodicBoundary as periodicBoundary
 from abaqus import *
 from abaqusConstants import *
 from caeModules import *
 from driverUtils import executeOnCaeStartup
 from math import *
-import sys
-try:
-    sys.path.append("src")
-except:
-    pass
+
 from constants import *
 
 def log(message):
@@ -144,9 +146,7 @@ a.ReferencePoint(point=(0.0, -50.0, 0.0))
 a = mdb.models['Model-1'].rootAssembly
 a.ReferencePoint(point=(0.0, -60.0, 0.0))
 
-import sys
 
-import src.th_gen.periodicBoundary as periodicBoundary
 periodicBoundary=periodicBoundary.PeriodicBoundary()
 periodicBoundary.__init__()
 

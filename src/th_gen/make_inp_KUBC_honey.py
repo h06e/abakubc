@@ -6,7 +6,7 @@ from math import *
 import sys
 import os
 try:
-    sys.path.append("src")
+    sys.path.append("../src")
 except:
     pass
 from constants import *

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from math import *
 import sys
 try:
-    sys.path.append("src")
+    sys.path.append("../src")
 except:
     pass
 import os

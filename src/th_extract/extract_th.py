@@ -74,6 +74,6 @@ np.set_printoptions(precision=5,suppress=True,floatmode='fixed')
 log(K)
 
 K=K.tolist()
-with open('theory_matrix_bank/{}.json'.format(file_name), 'w') as f:
+with open('../theory_matrix_bank/{}.json'.format(file_name), 'w') as f:
     json.dump(K, f, indent=4, separators=(", ", ": "), sort_keys=True)
 

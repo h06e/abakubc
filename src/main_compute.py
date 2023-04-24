@@ -1,7 +1,7 @@
 import sys
 
 try:
-    sys.path.append("src")
+    sys.path.append("../src")
 except:
     pass
 from post_compute import post_reader

@@ -1,14 +1,14 @@
-import src.th_gen.periodicBoundary as periodicBoundary
+import sys
+try:
+    sys.path.append("../src")
+except:
+    pass
+import th_gen.periodicBoundary as periodicBoundary
 from abaqus import *
 from abaqusConstants import *
 from caeModules import *
 from driverUtils import executeOnCaeStartup
 from math import *
-import sys
-try:
-    sys.path.append("src")
-except:
-    pass
 from constants import *
 
 

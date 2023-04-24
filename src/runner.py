@@ -89,21 +89,6 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
             except:
                 pass
 
-def move_file_duto_error (test, paths, KUBC_name=None, PBC_name=None):
-    try: 
-        os.mkdir(test['test_id'])
-    except:
-        pass
-
-    for file in os.listdir(paths[ROOT]):
-        if test['test_id'] in file or         \
-                (KUBC_name and KUBC_name in file) or\
-                (PBC_name and PBC_name in file):
-            try:
-                shutil.move(file, os.path.join(test['test_id'],file))
-            except:
-                pass
-
 # * -------------------------------------------
 
 def run_test(test):
@@ -111,13 +96,9 @@ def run_test(test):
     logging.info(f'START: model {test["test_id"]}')
     # * generate the main inp (the actual test)
     try:
-        run_script('src/make_inp',
-                   [str(test).replace(' ', ''), str(paths).replace(' ', '')])
-    except Exception as e:
-        logging.error('Error while generating the main test')
-        move_file_duto_error (test, paths)
+        check_call(['./sub_run_main.sh', test['test_id'], 'make_inp', str(test).replace(' ', ''), str(paths).replace(' ', '')])
+    except:
         return 1
-    # return 0
     # * generate the inp of KUBC and PBC id needed
     KUBC_name, PBC_name = get_job_name_PBC_KUBC(test)
     if test['sample_name'] in model_with_KUBC_th and\
@@ -126,11 +107,11 @@ def run_test(test):
         open(f'{KUBC_name}.tmp', 'w').close()
         logging.info('GEN of the KUBC')
         try:
-            run_script(f'src/th_gen/make_inp_KUBC_{test["sample_name"]}', [
-                str(test).replace(' ', ''), str(paths).replace(' ', '')])
+            check_call(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_KUBC_{test["sample_name"]}', 
+                        str(test).replace(' ', ''), str(paths).replace(' ', '')])
         except Exception as e:
             logging.error('Error while generating the KUBC')
-            move_file_duto_error (test, paths, KUBC_name)
+            remove_files_during_run(test, paths, KUBC_name, PBC_name)
             return 2
     else:
         KUBC_name = None
@@ -140,27 +121,15 @@ def run_test(test):
         open(f'{PBC_name}.tmp', 'w').close()
         logging.info('GEN of the PBC')
         try:
-            run_script(f'src/th_gen/make_inp_PBC_{test["sample_name"]}', [
-                str(test).replace(' ', ''), str(paths).replace(' ', '')])
+            check_call(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_PBC_{test["sample_name"]}', 
+                        str(test).replace(' ', ''), str(paths).replace(' ', '')])
         except Exception as e:
             logging.error('Error while generating the PBC')
-            move_file_duto_error (test, paths, KUBC_name, PBC_name)
+            remove_files_during_run(test, paths, KUBC_name, PBC_name)
             return 3
     else:
         PBC_name = None
 
-    # # * submit the computation when needed
-    # job_list = [] #? job_list = [test['test_id']]
-    # if KUBC_name:
-    #     job_list.append(KUBC_name)
-    # if PBC_name:
-    #     job_list.append(PBC_name)
-    # try:
-    #     sumbit_job(job_list=job_list, scratch=paths[ROOT])
-    # except Exception as e:
-    #     logging.error('Error while submiting the job')
-    #     move_file_duto_error (test, paths, KUBC_name, PBC_name)
-    #     return 4
     # * Extracting the data
     try:
         main_extract.proceed_extract_bis(paths, test, KUBC_name, PBC_name)

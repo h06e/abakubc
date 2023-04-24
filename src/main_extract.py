@@ -26,12 +26,14 @@ def proceed_extract_bis(paths, test, th_KUBC_name, th_PBC_name):
     # * Dépouillement du PBC et KUBC th s'il(s) existe(nt)
     if th_KUBC_name:
         logging.info('Extracting and commputing the KUBC')
-        run_script(f'src/th_extract/extract_th', [
-                   str(test).replace(' ', ''), th_KUBC_name])
+        check_call(['./sub_run_main.sh', test['test_id'], f'th_extract/extract_th', 
+                        str(test).replace(' ', ''), th_KUBC_name])
     if th_PBC_name:
         logging.info('Extracting and commputing the PBC')
-        run_script(f'src/th_extract/extract_th', [
-                   str(test).replace(' ', ''), th_PBC_name])
+        check_call(['./sub_run_main.sh', test['test_id'], f'th_extract/extract_th', 
+                        str(test).replace(' ', ''), th_PBC_name])
+        # run_script(f'src/th_extract/extract_th', [
+        #            str(test).replace(' ', ''), th_PBC_name])
     # * Cas particulier où le pbc ou kubc tournent sur un autre cpu qui n'a pas terminé
     KUBC_name, PBC_name = get_job_name_PBC_KUBC(test)
     if test['sample_name'] in model_with_KUBC_th:
@@ -48,8 +50,10 @@ def proceed_extract_bis(paths, test, th_KUBC_name, th_PBC_name):
                 raise FileNotFoundError
     # * Extraction du fichier principal (du test en lui-meme)
     logging.info('Extracting the main odb')
-    run_script(f'src/post_extract', [
-        str(test).replace(' ', ''), str(paths).replace(' ', '')])
+    check_call(['./sub_run_main.sh', test['test_id'], f'post_extract', 
+                        str(test).replace(' ', ''), str(paths).replace(' ', '')])
+    # run_script(f'src/post_extract', [
+    #     str(test).replace(' ', ''), str(paths).replace(' ', '')])
 
 
 if __name__ == '__main__':

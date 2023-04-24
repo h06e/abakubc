@@ -496,8 +496,6 @@ def assemble_model_2d(test, paths, step_list):
     mdb.openAcis(os.path.join(paths[SAMPLE_BANK_DIR], '{}.sat'.format(
         geometry_name)), scaleFromFile=OFF)
     
-    with open('../{}.txt'.format(test["test_id"]), 'w') as f:
-        f.write(geometry_name)
 
     model.PartFromGeometryFile(
         combine=False, dimensionality=TWO_D_PLANAR, geometryFile=mdb.acis,

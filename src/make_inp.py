@@ -5,7 +5,7 @@ from driverUtils import executeOnCaeStartup
 import sys
 import os
 try:
-    sys.path.append("src")
+    sys.path.append("../src")
 except:
     pass
 from constants import *
