@@ -15,6 +15,7 @@ from geometry import honey
 from geometry import kagome
 from geometry import hexachiral
 from geometry import rectangle
+from geometry import losange
 import time
 import csv
 from constants import *

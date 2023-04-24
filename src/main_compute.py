@@ -183,15 +183,16 @@ def proceed_computation(paths, test):
     if test['sample_name'] in model_with_PBC_th:
         with open(os.path.join(paths[THEORY_DIR], f'{PBC_name}.json')) as f:
             K_plane_stress_PBC = json.load(f)
-            data['K_plane_stress_PBC'] = K_plane_stress_PBC
             K_plane_stress_PBC = np.array(K_plane_stress_PBC)
             # * Rotation de la matrice
             angle = test['trans_rot'][2]*pi/180
             c, s = cos(angle), sin(angle)
-            T = np.array([[c**2, s**2, c*s],
-                          [s**2, c**2, -c*s],
-                          [-2*s*c, 2*c*s, c**2-s**2]])
-            K_plane_stress_PBC=np.dot(np.dot(np.transpose(T),K_plane_stress_PBC),T)
+            T = np.array([[c**2, s**2, sqrt(2)*c*s],
+                          [s**2, c**2, -sqrt(2)*c*s],
+                          [-sqrt(2)*s*c, sqrt(2)*c*s, (c**2-s**2)]])
+            K_plane_stress_PBC = np.dot(
+                np.dot(np.transpose(T), K_plane_stress_PBC), T)
+            data['K_plane_stress_PBC'] = K_plane_stress_PBC.tolist()
             Ks.append(K_plane_stress_PBC)
     if test['sample_name'] in model_with_KUBC_th:
         with open(os.path.join(paths[THEORY_DIR], f'{KUBC_name}.json')) as f:

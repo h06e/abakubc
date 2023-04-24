@@ -83,7 +83,8 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
         os.remove(f'{KUBC_name}.tmp')
     if PBC_name:
         os.remove(f'{PBC_name}.tmp')
-    shutil.rmtree(test['test_id'])
+    if test['debug']!='True':
+        shutil.rmtree(test['test_id'])
     
 # * -------------------------------------------
 
@@ -91,6 +92,7 @@ def run_test(test):
     init_log()
     logging.info(f'START: model {test["test_id"]}')
     # * generate the main inp (the actual test)
+    logging.info('Gen and run of the main test')
     try:
         check_call(['./sub_run_main.sh', test['test_id'], 'make_inp', str(test).replace(' ', ''), str(paths).replace(' ', '')])
     except:
@@ -101,7 +103,7 @@ def run_test(test):
         f'{KUBC_name}.json' not in os.listdir(paths[THEORY_DIR]) and \
             f'{KUBC_name}.tmp' not in os.listdir(paths[ROOT]):
         open(f'{KUBC_name}.tmp', 'w').close()
-        logging.info('GEN of the KUBC')
+        logging.info('Gen and run of the KUBC')
         try:
             check_call(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_KUBC_{test["sample_name"]}', 
                         str(test).replace(' ', ''), str(paths).replace(' ', '')])
@@ -115,8 +117,10 @@ def run_test(test):
         f'{PBC_name}.json' not in os.listdir(paths[THEORY_DIR]) and \
             f'{PBC_name}.tmp' not in os.listdir(paths[ROOT]):
         open(f'{PBC_name}.tmp', 'w').close()
-        logging.info('GEN of the PBC')
+        logging.info('Gen and run of the PBC')
         try:
+            logging.debug(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_PBC_{test["sample_name"]}', 
+                        str(test).replace(' ', ''), str(paths).replace(' ', '')])
             check_call(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_PBC_{test["sample_name"]}', 
                         str(test).replace(' ', ''), str(paths).replace(' ', '')])
         except Exception as e:
@@ -127,6 +131,7 @@ def run_test(test):
         PBC_name = None
 
     # * Extracting the data
+    logging.info('Extracting the data')
     try:
         main_extract.proceed_extract_bis(paths, test, KUBC_name, PBC_name)
     except Exception as e:
@@ -134,6 +139,7 @@ def run_test(test):
         remove_files_during_run(test, paths, KUBC_name, PBC_name)
         return 5
     # * Computing the result
+    logging.info('Computing the data')
     try:
         main_compute.proceed_computation(paths, test)
     except Exception as e:
@@ -167,7 +173,7 @@ if DEBUG:
     for file in os.listdir(os.getcwd()):
         if not os.path.isfile(file) and file not in ['utilities', 'src', '.git']:
             shutil.rmtree(file)
-time.sleep(2)
+    time.sleep(1)
 
 N_TASK = int(sys.argv[-2])
 campagne_name = sys.argv[-1]
@@ -179,16 +185,6 @@ with Pool(processes=N_TASK-1) as pool:
     for r in results:
         print(f'Status: {r}')
 
-# * Remove eventual folder created by abq
-# list_of_campaign=[]
-# for file in os.listdir(os.getcwd()):
-#     if file.split('.')[-1]=='csv':
-#         list_of_campaign.append(file.split('.')[:-1][0])
-
-# print(f'{list_of_campaign=}')
-# for file in os.listdir(os.getcwd()):
-#     if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git', 'theory_matrix_bank', 'porosity', 'sample_bank']:
-#         shutil.rmtree(file)
 
 # * Essaye d'envoyer une notification de bureau
 try:

@@ -7,6 +7,7 @@ By Robin Valmalette
 # Add a new geometry:
 
 - Create the main file and place it in /src/geometries/
+- in `make_inp.py`, add `from geometry import <geo_name>`
 - update the constants file if PBC and KUBC are required
 - make KUBC and PBC gen file
 - update operation.py to tell how to compute the porosity
