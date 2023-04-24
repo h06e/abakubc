@@ -79,16 +79,12 @@ def init_log(open_in_vsc=False):
         check_call(['code', '-r', f'{i:03.0f}_log.log'])
 
 def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
-    for file in os.listdir(paths[ROOT]):
-        if test['test_id'] in file or               \
-                'abaqus.rpy' in file or             \
-                (KUBC_name and KUBC_name in file) or\
-                (PBC_name and PBC_name in file):
-            try:
-                os.remove(file)
-            except:
-                pass
-
+    if KUBC_name:
+        os.remove(f'{KUBC_name}.tmp')
+    if PBC_name:
+        os.remove(f'{PBC_name}.tmp')
+    shutil.rmtree(test['test_id'])
+    
 # * -------------------------------------------
 
 def run_test(test):
@@ -147,15 +143,15 @@ def run_test(test):
     # * Deal with the odbs
     if test['keep_odb']:
         if PBC_name:
-            shutil.move(f'{PBC_name}.odb', os.path.join(
+            shutil.move(os.path.join(test['test_id'],f'{PBC_name}.odb'), os.path.join(
                 paths[ODB_STOCK_DIR], f'{PBC_name}.odb'))
         if KUBC_name:
-            shutil.move(f'{KUBC_name}.odb', os.path.join(
+            shutil.move(os.path.join(test['test_id'],f'{KUBC_name}.odb'), os.path.join(
                 paths[ODB_STOCK_DIR], f'{KUBC_name}.odb'))
-        shutil.move(f'{test["test_id"]}.odb', os.path.join(
+        shutil.move(os.path.join(test['test_id'],f'{test["test_id"]}.odb'), os.path.join(
             paths[ODB_STOCK_DIR], f'{test["test_id"]}.odb'))
     # * Remove files
-    #remove_files_during_run(test, paths, KUBC_name, PBC_name)
+    remove_files_during_run(test, paths, KUBC_name, PBC_name)
     logging.info(f'test {test["test_id"]} COMPLETED')
     return 0
 
