@@ -162,8 +162,7 @@ def get_porosity (test,paths):
     if test['sample_name']=='monolithic':
         return 0.0
     elif test['sample_name']=='honey':
-        L=test['geo_parameters'].split('/')[0]
-        width=test['geo_parameters'].split('/')[1]
+        L, width=test['geo_parameters']
         porosity=((L/2-width/2)/(L/2))**2
         return porosity
     elif test['sample_name']=='rectangle':

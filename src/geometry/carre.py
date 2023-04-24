@@ -164,7 +164,7 @@ def make_geo (current_path,skip_cylinders,improve_geo):
     mdb.models['Model-1'].rootAssembly.Instance(dependent=ON, name=
         'cutter_2-1', part=mdb.models['Model-1'].parts['cutter_2'])
     
-    mdb.saveAs(pathName='/ul/valmalette/Documents/abakubc_V1.0/src/test')
+    #mdb.saveAs(pathName='/ul/valmalette/Documents/abakubc_V1.0/src/test')
     
     a1 = mdb.models['Model-1'].rootAssembly
     a1.InstanceFromBooleanCut(name='struct_no_support', 

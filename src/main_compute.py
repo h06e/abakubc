@@ -16,39 +16,46 @@ from post_compute.post_config import *
 import os
 import matplotlib.cbook as cbook
 import json
-from math import sqrt
+from math import sqrt, cos, sin, pi
 from constants import *
 import time
 from constants import *
 
-def get_job_name_PBC_KUBC (test):
+
+def get_job_name_PBC_KUBC(test):
     """see KUBC and PBC func, job name cannot contain . char (Abq requirement)
     So i convert the . into %. I also remove () and <space>"""
-    KUBC_name = 'KUBC_'+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameters', 'mat', 'trans_rot']]).replace('.', '%')
+    KUBC_name = 'KUBC_'+'_'.join([str(test[i]) for i in ['sample_name',
+                                                         'geo_parameters', 'mat', 'trans_rot']]).replace('.', '%')
     for char in ['(', ')', ' ']:
         KUBC_name = KUBC_name.replace(char, '')
-    PBC_name = 'PBC_'+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameters', 'mat']]).replace('.', '%')
+    PBC_name = 'PBC_' + \
+        '_'.join([str(test[i]) for i in ['sample_name',
+                                         'geo_parameters', 'mat']]).replace('.', '%')
     for char in ['(', ')', ' ']:
         PBC_name = PBC_name.replace(char, '')
     return KUBC_name, PBC_name
 
+
 def proceed_computation(paths, test):
 
     for i in test:
-        if len(test[i])==0:
-            test[i]=None
+        if len(test[i]) == 0:
+            test[i] = None
         else:
             try:
-                test[i] = eval(test[i]) if i not in ['sample_name', 'status', 'comment', 'err'] else test[i]
+                test[i] = eval(test[i]) if i not in [
+                    'sample_name', 'status', 'comment', 'err'] else test[i]
             except NameError:
                 pass
 
-    campagne_name=paths[RES_DIR].split('/')[-2]
+    campagne_name = paths[RES_DIR].split('/')[-2]
     header, campagne = manipulation.read_campagne(campagne_name)
     index_test = next((idx for (idx, t) in enumerate(
         campagne) if t['test_id'] == test['test_id']), None)
     res_folder = os.path.join(paths[RES_DIR], test['test_id'])
-    time_step, extracted_disp_and_force = post_reader.read_panto_data(res_folder)
+    time_step, extracted_disp_and_force = post_reader.read_panto_data(
+        res_folder)
     thickness = test['thickness'] if test['thickness'] != 0 else 1.0
     porosity = operation.get_porosity(test, paths)
     cylinders_raw, cylinders = operation.assign_cylinders(
@@ -84,7 +91,8 @@ def proceed_computation(paths, test):
     # --------------------------------------------------
     # Computation of the strain field from the displacement
     # Resolve A*d=U with epsilon=[e11, e22, e12, MCR1, MCR2, MDRR12]
-    nodes_coord = np.loadtxt(os.path.join(res_folder,'node_coord.csv'), delimiter=',')
+    nodes_coord = np.loadtxt(os.path.join(
+        res_folder, 'node_coord.csv'), delimiter=',')
     area_of_interest = 4
     strain_field = []
     residuals = []
@@ -133,7 +141,6 @@ def proceed_computation(paths, test):
                           test['load_'+str(step)][1]/100,
                           test['load_'+str(step)][2]/2/100])
 
-
     # --------------------------------------------
     # stiffnesses
 
@@ -162,7 +169,7 @@ def proceed_computation(paths, test):
 
     # * Ajout des matrices theorique et construction de la matrice d'erreur DANS l'ordre
     # * Plane stress, PBC, KUBC, K_field_dic, K_panto_dic
-    Ks=[]
+    Ks = []
 
     if test['sample_name'] == 'monolithic':
         E = test['mat'][0]
@@ -173,54 +180,65 @@ def proceed_computation(paths, test):
         Ks.append(K_plane_stress)
 
     KUBC_name, PBC_name = get_job_name_PBC_KUBC(test)
-    if test['sample_name']  in model_with_PBC_th:
+    if test['sample_name'] in model_with_PBC_th:
         with open(os.path.join(paths[THEORY_DIR], f'{PBC_name}.json')) as f:
             K_plane_stress_PBC = json.load(f)
             data['K_plane_stress_PBC'] = K_plane_stress_PBC
-            Ks.append(np.array(K_plane_stress_PBC))
-    if test['sample_name']  in model_with_KUBC_th:
+            K_plane_stress_PBC = np.array(K_plane_stress_PBC)
+            # * Rotation de la matrice
+            angle = test['trans_rot'][2]*pi/180
+            c, s = cos(angle), sin(angle)
+            T = np.array([[c**2, s**2, c*s],
+                          [s**2, c**2, -c*s],
+                          [-2*s*c, 2*c*s, c**2-s**2]])
+            K_plane_stress_PBC=np.dot(np.dot(np.transpose(T),K_plane_stress_PBC),T)
+            Ks.append(K_plane_stress_PBC)
+    if test['sample_name'] in model_with_KUBC_th:
         with open(os.path.join(paths[THEORY_DIR], f'{KUBC_name}.json')) as f:
             K_plane_stress_KUBC = json.load(f)
             data['K_plane_stress_KUBC'] = K_plane_stress_KUBC
             Ks.append(np.array(K_plane_stress_KUBC))
-        
+
     Ks.append(K_field_dic)
     Ks.append(K_panto_dic)
 
     global_deviation = operation.compute_total_deviation_matrix(Ks)
-    data['global_err']=global_deviation.tolist()
-    
+    data['global_err'] = global_deviation.tolist()
+
     # * Add the skiped cylinder in final_data.json
 
-    dim=test['dim']
+    dim = test['dim']
     if dim == 3:
-        c_dim=''
+        c_dim = ''
     else:
-        c_dim='2d'
-    geometry_name=c_dim+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameters', 'trans_rot', 'thickness', 'corner_cleaner']])
+        c_dim = '2d'
+    geometry_name = c_dim+'_'.join([str(test[i]) for i in ['sample_name',
+                                                           'geo_parameters', 'trans_rot', 'thickness', 'corner_cleaner']])
     skip_cylinders = []
     with open(os.path.join(paths[SAMPLE_BANK_DIR], '{}_skip_cyl.csv'.format(geometry_name)), "r") as f:
         reader = csv.reader(f, delimiter=',')
         for row in reader:
             skip_cylinders.append([int(i) for i in row])
-    data['skipped_cyl']=skip_cylinders
+    data['skipped_cyl'] = skip_cylinders
 
-    with open(os.path.join(res_folder,'final_data.json'), "w") as fp:
-        json.dump(data, fp, indent=4, separators=(", ", ": "), sort_keys=True)  # encode dict into JSON
+    with open(os.path.join(res_folder, 'final_data.json'), "w") as fp:
+        json.dump(data, fp, indent=4, separators=(", ", ": "),
+                  sort_keys=True)  # encode dict into JSON
 
     # * update de la campagne
 
-    campagne_name=paths[RES_DIR].split('/')[-2]
-    header,campagne=manipulation.read_campagne(campagne_name)
-    index_test=next( (idx for (idx,t) in enumerate(campagne) if t['test_id']==test['test_id']),None)
+    campagne_name = paths[RES_DIR].split('/')[-2]
+    header, campagne = manipulation.read_campagne(campagne_name)
+    index_test = next((idx for (idx, t) in enumerate(campagne)
+                       if t['test_id'] == test['test_id']), None)
 
-    
     df = pd.read_csv(f'{campagne_name}.csv', delimiter=';')
     df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m_%d_%H%M")
-    df.loc[index_test, 'err']=str(global_deviation.tolist()).replace('[','').replace(']','')
+    df.loc[index_test, 'err'] = str(
+        global_deviation.tolist()).replace('[', '').replace(']', '')
     df.to_csv(f'{campagne_name}.csv', index=False, sep=';')
 
     if not test['keep_odb']:
         for file in os.listdir(res_folder):
             if 'step' in file or 'node' in file:
-                os.remove(os.path.join(res_folder,file))
+                os.remove(os.path.join(res_folder, file))

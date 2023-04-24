@@ -48,8 +48,8 @@ s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__',
 g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
 s.setPrimaryObject(option=STANDALONE)
 s.rectangle(point1=(-space_1/2, -space_2/2), point2=(space_1/2, space_2/2))
-s.rectangle(point1=((-space_1+width_1/2)/2, (-space_2+width_2/2)/2),
-            point2=((space_1-width_1/2)/2, (space_2-width_2/2)/2))
+s.rectangle(point1=((-space_1+width_1)/2, (-space_2+width_2)/2),
+            point2=((space_1-width_1)/2, (space_2-width_2)/2))
 p = mdb.models['Model-1'].Part(name='Part-1', dimensionality=TWO_D_PLANAR,
                                type=DEFORMABLE_BODY)
 p = mdb.models['Model-1'].parts['Part-1']
@@ -184,16 +184,19 @@ mdb.Job(name=job_name, model='Model-1', description='', type=ANALYSIS,
         memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
         explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
         modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-        scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+        scratch=os.getcwd(), resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
         numGPUs=0)
 
-# * Brute force the writing of the input file because Abq sometime return an error
-inp_is_written = False
-while not inp_is_written:
-    try:
-        mdb.jobs[job_name].writeInput(
-            consistencyChecking=OFF)  # Write the inp file
-    except:
-        pass
-    else:
-        inp_is_written = True
+# # * Brute force the writing of the input file because Abq sometime return an error
+# inp_is_written = False
+# while not inp_is_written:
+#     try:
+#         mdb.jobs[job_name].writeInput(
+#             consistencyChecking=OFF)  # Write the inp file
+#     except:
+#         pass
+#     else:
+#         inp_is_written = True
+
+mdb.jobs[job_name].submit(consistencyChecking=OFF)
+mdb.jobs[job_name].waitForCompletion()

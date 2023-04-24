@@ -107,7 +107,7 @@ def move_file_duto_error (test, paths, KUBC_name=None, PBC_name=None):
 # * -------------------------------------------
 
 def run_test(test):
-    init_log(open_in_vsc=True)
+    init_log()
     logging.info(f'START: model {test["test_id"]}')
     # * generate the main inp (the actual test)
     try:
@@ -117,6 +117,7 @@ def run_test(test):
         logging.error('Error while generating the main test')
         move_file_duto_error (test, paths)
         return 1
+    # return 0
     # * generate the inp of KUBC and PBC id needed
     KUBC_name, PBC_name = get_job_name_PBC_KUBC(test)
     if test['sample_name'] in model_with_KUBC_th and\
@@ -148,18 +149,18 @@ def run_test(test):
     else:
         PBC_name = None
 
-    # * submit the computation when needed
-    job_list = [test['test_id']]
-    if KUBC_name:
-        job_list.append(KUBC_name)
-    if PBC_name:
-        job_list.append(PBC_name)
-    try:
-        sumbit_job(job_list=job_list, scratch=paths[ROOT])
-    except Exception as e:
-        logging.error('Error while submiting the job')
-        move_file_duto_error (test, paths, KUBC_name, PBC_name)
-        return 4
+    # # * submit the computation when needed
+    # job_list = [] #? job_list = [test['test_id']]
+    # if KUBC_name:
+    #     job_list.append(KUBC_name)
+    # if PBC_name:
+    #     job_list.append(PBC_name)
+    # try:
+    #     sumbit_job(job_list=job_list, scratch=paths[ROOT])
+    # except Exception as e:
+    #     logging.error('Error while submiting the job')
+    #     move_file_duto_error (test, paths, KUBC_name, PBC_name)
+    #     return 4
     # * Extracting the data
     try:
         main_extract.proceed_extract_bis(paths, test, KUBC_name, PBC_name)
@@ -168,9 +169,8 @@ def run_test(test):
         remove_files_during_run(test, paths, KUBC_name, PBC_name)
         return 5
     # * Computing the result
-    main_compute.proceed_computation(paths, test)
     try:
-        pass
+        main_compute.proceed_computation(paths, test)
     except Exception as e:
         logging.error('Error while the computation')
         remove_files_during_run(test, paths, KUBC_name, PBC_name)
@@ -186,7 +186,7 @@ def run_test(test):
         shutil.move(f'{test["test_id"]}.odb', os.path.join(
             paths[ODB_STOCK_DIR], f'{test["test_id"]}.odb'))
     # * Remove files
-    remove_files_during_run(test, paths, KUBC_name, PBC_name)
+    #remove_files_during_run(test, paths, KUBC_name, PBC_name)
     logging.info(f'test {test["test_id"]} COMPLETED')
     return 0
 
@@ -215,15 +215,15 @@ with Pool(processes=N_TASK-1) as pool:
         print(f'Status: {r}')
 
 # * Remove eventual folder created by abq
-list_of_campaign=[]
-for file in os.listdir(os.getcwd()):
-    if file.split('.')[-1]=='csv':
-        list_of_campaign.append(file.split('.')[:-1][0])
+# list_of_campaign=[]
+# for file in os.listdir(os.getcwd()):
+#     if file.split('.')[-1]=='csv':
+#         list_of_campaign.append(file.split('.')[:-1][0])
 
-print(f'{list_of_campaign=}')
-for file in os.listdir(os.getcwd()):
-    if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git', 'theory_matrix_bank', 'porosity', 'sample_bank']:
-        shutil.rmtree(file)
+# print(f'{list_of_campaign=}')
+# for file in os.listdir(os.getcwd()):
+#     if not os.path.isfile(file) and file not in list_of_campaign+['utilities', 'src', '.git', 'theory_matrix_bank', 'porosity', 'sample_bank']:
+#         shutil.rmtree(file)
 
 # * Essaye d'envoyer une notification de bureau
 try:

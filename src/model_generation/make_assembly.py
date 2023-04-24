@@ -375,7 +375,7 @@ def assemble_model(test, paths, step_list):
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+            scratch=os.getcwd(), resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
             numGPUs=0)
 
 
@@ -492,8 +492,12 @@ def assemble_model_2d(test, paths, step_list):
         for row in reader:
             skip_cylinders.append(map(int, row))
 
+
     mdb.openAcis(os.path.join(paths[SAMPLE_BANK_DIR], '{}.sat'.format(
         geometry_name)), scaleFromFile=OFF)
+    
+    with open('../{}.txt'.format(test["test_id"]), 'w') as f:
+        f.write(geometry_name)
 
     model.PartFromGeometryFile(
         combine=False, dimensionality=TWO_D_PLANAR, geometryFile=mdb.acis,
@@ -736,8 +740,8 @@ def assemble_model_2d(test, paths, step_list):
             memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
             explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
             modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch='', resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
+            scratch=os.getcwd(), resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
             numGPUs=0)
 
-    # mdb.saveAs(pathName='mdb')
+    mdb.saveAs(pathName='{}.mdb'.format(test["test_id"]))
     # exit()
