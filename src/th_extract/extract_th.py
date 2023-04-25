@@ -13,7 +13,7 @@ from math import sqrt
 import sys
 from math import tan,pi
 import json
-
+from math import *
 
 def log(message):
     print >> sys.__stdout__, message
@@ -50,6 +50,11 @@ else:
     elif test['sample_name']=='rectangle':
         width_1, width_2, space_1, space_2=test['geo_parameters']
         area=space_1*space_2
+    elif test['sample_name']=='losange':
+        width, length, angle = test['geo_parameters']
+        lx=2*length*sin(angle*pi/180.0/2.0)     
+        ly=2*length*cos(angle*pi/180.0/2.0)     
+        area=lx*ly
     else:
         raise ValueError
 
@@ -67,11 +72,11 @@ p=np.array([[fx[1][1],fx[3][1],fx[5][1]],
            [fy[1][1],fy[3][1],fy[5][1]],
            [fxy[1][1],fxy[3][1],fxy[5][1]]])*area
 #log(p)
-K=np.array([[fx[1][1]/e11,fx[3][1]/e22,fx[5][1]/eps12/sqrt(2)],
-           [fy[1][1]/e11,fy[3][1]/e22,fy[5][1]/eps12/sqrt(2)],
-           [fxy[1][1]/e11*sqrt(2),fxy[3][1]/e22*sqrt(2),fxy[5][1]/eps12]])
+K=np.array([[fx[1][1]/e11,fx[3][1]/e22,fx[5][1]/(2*eps12)],
+           [fy[1][1]/e11,fy[3][1]/e22,fy[5][1]/(2*eps12)],
+           [fxy[1][1]/e11,fxy[3][1]/e22,fxy[5][1]/(2*eps12)]])
 np.set_printoptions(precision=5,suppress=True,floatmode='fixed')
-log(K)
+
 
 K=K.tolist()
 with open('../theory_matrix_bank/{}.json'.format(file_name), 'w') as f:

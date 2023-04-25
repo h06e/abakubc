@@ -135,13 +135,6 @@ def make_geo_2d(paths, test, skip_cylinders):
         instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['Primary-1'], 
         name='cell_square-1', originalInstances=DELETE)
 
-    # * SAVE THE POROSITY
-    a = mdb.models['Model-1'].rootAssembly
-    area=a.getArea(mdb.models['Model-1'].parts['cell_square-1'].faces)
-    porosity = (288*288 - area) / (288*288)
-    with open(os.path.join(paths[POROSITY],'_'.join([test['sample_name'],str(test['geo_parameters'])])+'.json'),'w') as f:
-        json.dump(porosity,f, indent=4, separators=(", ", ": "), sort_keys=True)
-
     s1 = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=200.0)
     g, v, d, c = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
     s1.setPrimaryObject(option=STANDALONE)

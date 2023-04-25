@@ -175,7 +175,7 @@ def proceed_computation(paths, test):
         E = test['mat'][0]
         nu = test['mat'][1]
         K_plane_stress = np.linalg.inv(
-            (np.array([[1/E, -nu/E, 0], [-nu/E, 1/E, 0], [0, 0, (1+nu)/E]])))
+            (np.array([[1/E, -nu/E, 0], [-nu/E, 1/E, 0], [0, 0, 2*(1+nu)/E]])))
         data['K_plane_stress'] = K_plane_stress.tolist()
         Ks.append(K_plane_stress)
 
@@ -187,9 +187,9 @@ def proceed_computation(paths, test):
             # * Rotation de la matrice
             angle = test['trans_rot'][2]*pi/180
             c, s = cos(angle), sin(angle)
-            T = np.array([[c**2, s**2, sqrt(2)*c*s],
-                          [s**2, c**2, -sqrt(2)*c*s],
-                          [-sqrt(2)*s*c, sqrt(2)*c*s, (c**2-s**2)]])
+            T = np.array([[c**2, s**2, c*s],
+                          [s**2, c**2, -c*s],
+                          [-2*s*c, 2*c*s, (c**2-s**2)]])
             K_plane_stress_PBC = np.dot(
                 np.dot(np.transpose(T), K_plane_stress_PBC), T)
             data['K_plane_stress_PBC'] = K_plane_stress_PBC.tolist()
@@ -241,5 +241,5 @@ def proceed_computation(paths, test):
 
     if not test['keep_odb']:
         for file in os.listdir(res_folder):
-            if 'step' in file or 'node' in file:
+            if 'step' in file or 'node' in file or 'elements' in file or 'connectivity' in file:
                 os.remove(os.path.join(res_folder, file))

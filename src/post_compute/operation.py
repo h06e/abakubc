@@ -136,21 +136,21 @@ def get_stress_average_whole_sample(root, folder_name, area, step_idx,porosity):
 
 def compute_stiffness_matrix(stress,strain):
     b=np.array([stress[0][0],stress[1][0],stress[2][0],])
-    a=np.array([[strain[0][0], strain[0][1], sqrt(2)*strain[0][2]],
-                [strain[1][0], strain[1][1], sqrt(2)*strain[1][2]],
-                [strain[2][0], strain[2][1], sqrt(2)*strain[2][2]]])
+    a=np.array([[strain[0][0], strain[0][1], 2*strain[0][2]],
+                [strain[1][0], strain[1][1], 2*strain[1][2]],
+                [strain[2][0], strain[2][1], 2*strain[2][2]]])
     k1j=np.linalg.solve(a, b)
     # Computation of K2j
     b=np.array([stress[0][1],stress[1][1],stress[2][1],])
-    a=np.array([[strain[0][0], strain[0][1], sqrt(2)*strain[0][2]],
-                [strain[1][0], strain[1][1], sqrt(2)*strain[1][2]],
-                [strain[2][0], strain[2][1], sqrt(2)*strain[2][2]]])
+    a=np.array([[strain[0][0], strain[0][1], 2*strain[0][2]],
+                [strain[1][0], strain[1][1], 2*strain[1][2]],
+                [strain[2][0], strain[2][1], 2*strain[2][2]]])
     k2j=np.linalg.solve(a, b)
     # Computation of K3j
     b=np.array([stress[0][2],stress[1][2],stress[2][2],])
-    a=1/sqrt(2)*np.array([[strain[0][0], strain[0][1], sqrt(2)*strain[0][2]],
-                [strain[1][0], strain[1][1], sqrt(2)*strain[1][2]],
-                [strain[2][0], strain[2][1], sqrt(2)*strain[2][2]]])
+    a=np.array([[strain[0][0], strain[0][1], 2*strain[0][2]],
+                [strain[1][0], strain[1][1], 2*strain[1][2]],
+                [strain[2][0], strain[2][1], 2*strain[2][2]]])
     k3j=np.linalg.solve(a, b)
     K=np.array([[k1j[0],k1j[1],k1j[2]],
                 [k2j[0],k2j[1],k2j[2]],

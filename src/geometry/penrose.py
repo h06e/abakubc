@@ -49,22 +49,26 @@ def make_geo_2d(paths, test, skip_cylinders):
     g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
     s.setPrimaryObject(option=STANDALONE)
     connectivity =[]
-    with open(os.path.join(os.path.join(paths[SRC], 'ressources'), 'penrose_beams.csv')) as csvfile:
+    with open(os.path.join(os.path.join(paths[SRC], 'ressources'), 'penrose_beam.csv')) as csvfile:
         spamreader = csv.reader(csvfile, delimiter=';')
         for row in spamreader:
-            connectivity.append(row)
+            connectivity.append([int(r) for r in row])
     coordinates=[]
     with open(os.path.join(os.path.join(paths[SRC], 'ressources'), 'penrose_nodes.csv')) as csvfile:
         spamreader = csv.reader(csvfile, delimiter=';')
         for row in spamreader:
-            coordinates.append(row)
+            coordinates.append([float(r) for r in row])
 
     for c in connectivity:
         s.Line(point1=tuple(coordinates[c[0]-1]), point2=tuple(coordinates[c[1]-1]))
     
+    selection=g.getByBoundingCylinder(-0.1,-0.1,-0.1,0.1,0.1,0.1)
+    s.setAsConstruction(objectList=selection)
+
     p = mdb.models['Model-1'].Part(name='Part-1', dimensionality=TWO_D_PLANAR, 
         type=DEFORMABLE_BODY)
     p = mdb.models['Model-1'].parts['Part-1']
+    mdb.saveAs('test.cae')
     p.BaseShell(sketch=s)
     s.unsetPrimaryObject()
     p = mdb.models['Model-1'].parts['Part-1']

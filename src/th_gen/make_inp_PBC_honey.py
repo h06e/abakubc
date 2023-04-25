@@ -9,7 +9,7 @@ from abaqusConstants import *
 from caeModules import *
 from driverUtils import executeOnCaeStartup
 from math import *
-
+import json
 from constants import *
 
 def log(message):
@@ -97,7 +97,13 @@ p.Cut(sketch=s)
 s.unsetPrimaryObject()
 del mdb.models['Model-1'].sketches['__profile__']
 
-
+# * SAVE THE POROSITY
+a = mdb.models['Model-1'].rootAssembly
+area=a.getArea(mdb.models['Model-1'].parts['Part-1'].faces)
+area_frame=L*2*(aa+2*bb)
+porosity = (area_frame - area) / area_frame
+with open(os.path.join(paths[POROSITY],'_'.join([test['sample_name'],str(test['geo_parameters'])])+'.json'),'w') as f:
+    json.dump(porosity,f, indent=4, separators=(", ", ": "), sort_keys=True)
 
 mdb.models['Model-1'].Material(name='Material-1')
 mdb.models['Model-1'].materials['Material-1'].Elastic(table=((E, nu), ))

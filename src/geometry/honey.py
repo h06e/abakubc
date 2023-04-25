@@ -150,13 +150,6 @@ def make_geo (paths, test, skip_cylinders):
         cuttingInstances=(a1.instances['cutter_1-1'], ), 
         originalInstances=DELETE)
 
-    # * SAVE THE POROSITY
-    a = mdb.models['Model-1'].rootAssembly
-    volume=a.getVolume(a.instances['cell_square-1'].cells)
-    porosity = (288*288*test['thickness'] - volume) / (288*288*test['thickness'] )
-
-    with open(os.path.join(paths[POROSITY],'_'.join([test['sample_name'],str(test['geo_parameters'])])+'.json'),'w') as f:
-        json.dump(porosity,f, indent=4, separators=(", ", ": "), sort_keys=True)
     # Second cut
     print("Second cut...")
     
@@ -274,12 +267,7 @@ def make_geo_2d(paths, test, skip_cylinders):
     s.unsetPrimaryObject()
     del mdb.models['Model-1'].sketches['__profile__']
 
-    # * SAVE THE POROSITY
-    a = mdb.models['Model-1'].rootAssembly
-    area=a.getArea(mdb.models['Model-1'].parts['Part-1'].faces)
-    porosity = (288*288 - area) / (288*288)
-    with open(os.path.join(paths[POROSITY],'_'.join([test['sample_name'],str(test['geo_parameters'])])+'.json'),'w') as f:
-        json.dump(porosity,f, indent=4, separators=(", ", ": "), sort_keys=True)
+    
 
     a = mdb.models['Model-1'].rootAssembly
     a.DatumCsysByDefault(CARTESIAN)

@@ -21,7 +21,7 @@
 *.SMAFocus
 *.sim
 *.023
-
+*.exception
 
 !src/ressources/support_2d.sat
 !src/ressources/support.sat

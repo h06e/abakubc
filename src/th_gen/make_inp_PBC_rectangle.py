@@ -10,7 +10,7 @@ from caeModules import *
 from driverUtils import executeOnCaeStartup
 from math import *
 from constants import *
-
+import json
 
 def log(message):
     print >> sys.__stdout__, message
@@ -57,6 +57,14 @@ p.BaseShell(sketch=s)
 s.unsetPrimaryObject()
 p = mdb.models['Model-1'].parts['Part-1']
 
+
+# * SAVE THE POROSITY
+a = mdb.models['Model-1'].rootAssembly
+area=a.getArea(mdb.models['Model-1'].parts['Part-1'].faces)
+area_frame=space_1*space_2
+porosity = (area_frame - area) / area_frame
+with open(os.path.join(paths[POROSITY],'_'.join([test['sample_name'],str(test['geo_parameters'])])+'.json'),'w') as f:
+    json.dump(porosity,f, indent=4, separators=(", ", ": "), sort_keys=True)
 
 mdb.models['Model-1'].Material(name='Material-1')
 mdb.models['Model-1'].materials['Material-1'].Elastic(table=((E, nu), ))

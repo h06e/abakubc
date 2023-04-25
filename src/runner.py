@@ -168,7 +168,7 @@ def run_test(test):
 
 # * reset the folder
 # ! DEBUG MODE
-DEBUG=True
+DEBUG=False
 if DEBUG:
     for file in os.listdir(os.getcwd()):
         if not os.path.isfile(file) and file not in ['utilities', 'src', '.git']:

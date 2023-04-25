@@ -16,6 +16,7 @@ from geometry import kagome
 from geometry import hexachiral
 from geometry import rectangle
 from geometry import losange
+from geometry import penrose
 import time
 import csv
 from constants import *

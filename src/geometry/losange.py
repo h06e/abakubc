@@ -38,15 +38,13 @@ def merge(input, output,DELETE=DELETE):
 
 
 def make_geo_2d(paths, test, skip_cylinders):
-    width, length=test['geo_parameters']
+    width, length, angle=test['geo_parameters']
     tx, ty, theta=test['trans_rot']
+    # * Espace pour les arrays
+    space=length*sin(angle*pi/180)
 
-    space_x=length/sqrt(2)
-    space_y=length/sqrt(2)
-    angle=45.0
+    N=int(488.0/space)
 
-    Ny=int(488.0/space_y)
-    Nx=int(488.0/space_x)
     
     # * First array horizontally sapce_1 and width
     s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', 
@@ -66,11 +64,11 @@ def make_geo_2d(paths, test, skip_cylinders):
         'Part-1', part=mdb.models['Model-1'].parts['Part-1'])
 
     mdb.models['Model-1'].rootAssembly.LinearInstancePattern(direction1=(1.0, 0.0, 
-        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-1', ), number1=Nx, 
-        number2=1, spacing1=space_x, spacing2=1.0)
+        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-1', ), number1=N, 
+        number2=1, spacing1=space, spacing2=1.0)
     mdb.models['Model-1'].rootAssembly.LinearInstancePattern(direction1=(-1.0, 0.0, 
-        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-1', ), number1=Nx, 
-        number2=1, spacing1=space_x, spacing2=1.0)
+        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-1', ), number1=N, 
+        number2=1, spacing1=space, spacing2=1.0)
 
     
     merge('Part-1', 'Part-2', DELETE)
@@ -93,11 +91,11 @@ def make_geo_2d(paths, test, skip_cylinders):
         'Part-3', part=mdb.models['Model-1'].parts['Part-3'])
 
     mdb.models['Model-1'].rootAssembly.LinearInstancePattern(direction1=(1.0, 0.0, 
-        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-3', ), number1=Ny, 
-        number2=1, spacing1=space_y, spacing2=1.0)
+        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-3', ), number1=N, 
+        number2=1, spacing1=space, spacing2=1.0)
     mdb.models['Model-1'].rootAssembly.LinearInstancePattern(direction1=(-1.0, 0.0, 
-        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-3', ), number1=Ny, 
-        number2=1, spacing1=space_y, spacing2=1.0)
+        0.0), direction2=(0.0, 1.0, 0.0), instanceList=('Part-3', ), number1=N, 
+        number2=1, spacing1=space, spacing2=1.0)
     
     merge('Part-3', 'Part-4')
     
@@ -111,7 +109,7 @@ def make_geo_2d(paths, test, skip_cylinders):
         mdb.models['Model-1'].rootAssembly.instances['Part-2-1']), name='Primary', 
         originalInstances=DELETE)
     
-    mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0, 
+    mdb.models['Model-1'].rootAssembly.rotate(angle=theta-angle/2.0, axisDirection=(0.0, 0.0, 
         1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('Primary-1', ))
     mdb.models['Model-1'].rootAssembly.translate(instanceList=('Primary-1',), vector=(tx, ty, 0.0))
 
@@ -139,12 +137,7 @@ def make_geo_2d(paths, test, skip_cylinders):
         instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['Primary-1'], 
         name='cell_square-1', originalInstances=DELETE)
 
-    # * SAVE THE POROSITY
-    a = mdb.models['Model-1'].rootAssembly
-    area=a.getArea(mdb.models['Model-1'].parts['cell_square-1'].faces)
-    porosity = (288*288 - area) / (288*288)
-    with open(os.path.join(paths[POROSITY],'_'.join([test['sample_name'],str(test['geo_parameters'])])+'.json'),'w') as f:
-        json.dump(porosity,f, indent=4, separators=(", ", ": "), sort_keys=True)
+  
 
     s1 = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', sheetSize=200.0)
     g, v, d, c = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
