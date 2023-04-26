@@ -30,12 +30,9 @@ def get_field_values(step,odb):
 
 def get_field_values_centroid(step,odb):
     lastFrame = step.frames[-1]
-    try:E_field = lastFrame.fieldOutputs['E'] # replace by 'LE' with nlgeom
-    except:E_field = lastFrame.fieldOutputs['LE']
     S_field = lastFrame.fieldOutputs['S']
-    centerE = E_field.getSubset(position=CENTROID)
     centerS = S_field.getSubset(position=CENTROID)
-    return centerE.bulkDataBlocks[0].data,centerS.bulkDataBlocks[0].data
+    return centerS.bulkDataBlocks[0].data
 
 def get_field_values_disp_nodal(step,odb):
     lastFrame = step.frames[-1]

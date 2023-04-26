@@ -223,8 +223,6 @@ for j, step in odb.steps.items():
     d_values = field.get_field_values_disp_nodal(step, odb)
     np.savetxt(os.path.join(res_folder,'U_'+str(j)+'.csv'),
                np.array(d_values), delimiter=", ", fmt='% s')
-    e_values, s_values = field.get_field_values_centroid(step, odb)
-    np.savetxt(os.path.join(res_folder,'E_'+str(j)+'.csv'),
-               e_values, delimiter=", ", fmt='% s')
+    s_values = field.get_field_values_centroid(step, odb)
     np.savetxt(os.path.join(res_folder,'S_'+str(j)+'.csv'),
                s_values, delimiter=", ", fmt='% s')
