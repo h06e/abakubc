@@ -144,7 +144,7 @@ def run_test(test):
         main_compute.proceed_computation(paths, test)
     except Exception as e:
         logging.error('Error while the computation')
-        remove_files_during_run(test, paths, KUBC_name, PBC_name)
+        #remove_files_during_run(test, paths, KUBC_name, PBC_name)
         return 6
     # * Deal with the odbs
     if test['keep_odb']:
