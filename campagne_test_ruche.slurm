@@ -14,5 +14,6 @@
 ##SBATCH --mail-user=firstname.lastname@centralesupelec.fr
 cd ${SLURM_SUBMIT_DIR}
 module load abaqus-mssmat/2021/gcc-9.2.0
+module load anaconda3/2020.02/gcc-9.2.0
 alias abaqus_2021="abaqus"
 python3 src/runner.py $SLURM_NTASKS campagne_test
