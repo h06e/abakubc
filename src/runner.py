@@ -24,12 +24,21 @@ def remove_files(path: str, types_to_remove: list[str] = []) -> None:
 def get_job_name_PBC_KUBC(test):
     """see KUBC and PBC func, job name cannot contain . char (Abq requirement)
     So i convert the . into %. I also remove () and <space>"""
-    KUBC_name = 'KUBC_'+'_'.join([str(test[i]) for i in ['sample_name',
-                                                         'geo_parameters', 'mat', 'trans_rot']]).replace('.', '%')
+    t = test.copy()
+    for i in t:
+        if len(t[i]) == 0:
+            t[i] = None
+        else:
+            try:
+                t[i] = eval(t[i]) if i != 'sample_name' else t[i]
+            except NameError:
+                pass
+    
+    KUBC_name ='KUBC_'+'_'.join([str(t[i]) for i in ['sample_name', 'geo_parameters', 'mat', 'trans_rot']]).replace('.', '%')
     for char in ['(', ')', ' ']:
         KUBC_name = KUBC_name.replace(char, '')
     PBC_name = 'PBC_' + \
-        '_'.join([str(test[i]) for i in ['sample_name',
+        '_'.join([str(t[i]) for i in ['sample_name',
                                          'geo_parameters', 'mat']]).replace('.', '%')
     for char in ['(', ')', ' ']:
         PBC_name = PBC_name.replace(char, '')
@@ -83,7 +92,7 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
         os.remove(f'{KUBC_name}.tmp')
     if PBC_name:
         os.remove(f'{PBC_name}.tmp')
-    if True: # ? test['debug'] not in ['True', True]
+    if False: # ? test['debug'] not in ['True', True]
         print('netoyage')
         shutil.rmtree(test['test_id'])
     
@@ -97,6 +106,7 @@ def run_test(test):
     try:
         check_call(['./sub_run_main.sh', test['test_id'], 'make_inp', str(test).replace(' ', ''), str(paths).replace(' ', '')])
     except:
+        remove_files_during_run(test, paths)
         return 1
     jobs_list=[test['test_id']]
     # * generate the inp of KUBC and PBC id needed

@@ -1,0 +1,128 @@
+
+from abaqus import *
+from abaqusConstants import *
+from caeModules import *
+from driverUtils import executeOnCaeStartup
+from part import *
+from material import *
+from section import *
+from assembly import *
+from interaction import *
+from mesh import *
+from visualization import *
+from connectorBehavior import *
+from math import *
+from constants import *
+from model_generation import make_add_supports
+from constants import *
+import json
+
+
+def log(message):
+    print >> sys.__stdout__, message
+
+
+def main(paths, test, skip_cylinders):
+    make_geo_2d(paths, test, skip_cylinders)
+
+
+def merge(input, output, DELETE, keepIntersections=OFF):
+    """fonction qui permet de merge en fonction du nom des instances : celles qui contiennent input"""
+    a1 = mdb.models['Model-1'].rootAssembly
+    instances = a1.instances.keys()
+    instances_list = ()
+    for ins in instances:
+        if input in ins:
+            instances_list = instances_list+(a1.instances[ins],)
+    a1.InstanceFromBooleanMerge(name=output, instances=instances_list, originalInstances=DELETE,
+                                domain=GEOMETRY,keepIntersections=keepIntersections)
+    return
+
+
+def make_geo_2d(paths, test, skip_cylinders):
+
+    scale = test['geo_parameters']
+    tx, ty, theta = test['trans_rot']
+    # le motif de base fait 20 de cote
+    N=int(280/(20*scale))
+
+    acis = mdb.openAcis(
+        os.path.join(paths[SRC], 'ressources', 'r0_cell.sat'), 
+        scaleFromFile=OFF)
+    mdb.models['Model-1'].PartFromGeometryFile(name='r0_cell', geometryFile=acis, 
+        combine=False, dimensionality=TWO_D_PLANAR, type=DEFORMABLE_BODY, 
+        scale=scale)
+    p = mdb.models['Model-1'].parts['r0_cell']
+
+    a1 = mdb.models['Model-1'].rootAssembly
+    a1.DatumCsysByDefault(CARTESIAN)
+    p = mdb.models['Model-1'].parts['r0_cell']
+    a1.Instance(name='r0_cell-1', part=p, dependent=ON)
+
+    a1 = mdb.models['Model-1'].rootAssembly
+    a1.translate(instanceList=('r0_cell-1', ), vector=(144.0, 144.0, 0.0))
+
+    a = mdb.models['Model-1'].rootAssembly
+    a.LinearInstancePattern(instanceList=('r0_cell-1', ), direction1=(1.0, 0.0, 
+        0.0), direction2=(0.0, 1.0, 0.0), number1=N, number2=N, spacing1=20.0*scale, 
+        spacing2=20.0*scale)
+    a.LinearInstancePattern(instanceList=('r0_cell-1', ), direction1=(-1.0, 0.0, 
+        0.0), direction2=(0.0, -1.0, 0.0), number1=N, number2=N, spacing1=20.0*scale, 
+        spacing2=20.0*scale)
+    mdb.saveAs('model.cae')
+
+    a = mdb.models['Model-1'].rootAssembly
+    merge('r0_cell-1','square', keepIntersections=ON)
+
+    a.rotate(centerPoint=(144.0, 144.0), angle=theta,
+             objectList=('square-1', ))
+    a.move(vector=(tx, ty), objectList=('square-1', ))
+
+    p = mdb.models['Model-1'].parts['Part-1']
+    p.Cut(sketch=s)
+    s.unsetPrimaryObject()
+    del mdb.models['Model-1'].sketches['__profile__']
+
+    a = mdb.models['Model-1'].rootAssembly
+    a.DatumCsysByDefault(CARTESIAN)
+    p = mdb.models['Model-1'].parts['Part-1']
+    a.Instance(name='Part-1-1', part=p, dependent=ON)
+
+    s1 = mdb.models['Model-1'].ConstrainedSketch(
+        name='__profile__', sheetSize=200.0)
+    g, v, d, c = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
+    s1.setPrimaryObject(option=STANDALONE)
+    s1.CircleByCenterPerimeter(center=(CYL_START_POS, -CYLINDER_CENTER_DIST_EDGE),
+                               point1=(CYL_START_POS, -CYLINDER_CENTER_DIST_EDGE+CYLINDER_RADIUS))
+    s1.linearPattern(geomList=(g.findAt((CYL_START_POS, -CYLINDER_CENTER_DIST_EDGE+CYLINDER_RADIUS)), ), vertexList=(),
+                     number1=NUMBER_OF_CYLINDER_PER_SIDE, spacing1=DIST_BETWEEN_CENTERS, angle1=0.0,
+                     number2=2, spacing2=SIDE_LENGTH+2*CYLINDER_CENTER_DIST_EDGE, angle2=90.0)
+    s1.CircleByCenterPerimeter(center=(-CYLINDER_CENTER_DIST_EDGE, CYL_START_POS),
+                               point1=(-CYLINDER_CENTER_DIST_EDGE, CYL_START_POS+CYLINDER_RADIUS))
+    s1.linearPattern(geomList=(g.findAt((-CYLINDER_CENTER_DIST_EDGE, CYL_START_POS+CYLINDER_RADIUS)), ), vertexList=(),
+                     number1=2, spacing1=SIDE_LENGTH+2*CYLINDER_CENTER_DIST_EDGE, angle1=0.0, number2=NUMBER_OF_CYLINDER_PER_SIDE, spacing2=DIST_BETWEEN_CENTERS,
+                     angle2=90.0)
+    p = mdb.models['Model-1'].Part(name='cutter_2', dimensionality=TWO_D_PLANAR,
+                                   type=DEFORMABLE_BODY)
+    p = mdb.models['Model-1'].parts['cutter_2']
+    p.BaseShell(sketch=s1)
+    s1.unsetPrimaryObject()
+    p = mdb.models['Model-1'].parts['cutter_2']
+    del mdb.models['Model-1'].sketches['__profile__']
+
+    mdb.models['Model-1'].rootAssembly.Instance(
+        dependent=ON, name='cutter_2-1', part=mdb.models['Model-1'].parts['cutter_2'])
+
+    log(mdb.models['Model-1'].rootAssembly.instances.keys())
+    a1 = mdb.models['Model-1'].rootAssembly
+    a1.InstanceFromBooleanCut(name='struct_no_support',
+                              instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'],
+                              cuttingInstances=(a1.instances['cutter_2-1'], ),
+                              originalInstances=DELETE)
+
+    print("Cuts completed")
+
+    # .py file adding the support
+    mdb.openAcis(os.path.join(paths[SRC], 'ressources', 'support_2d.sat'),
+                 scaleFromFile=OFF)
+    make_add_supports.add_support_2d(True, skip_cylinders)

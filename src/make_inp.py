@@ -17,6 +17,7 @@ from geometry import hexachiral
 from geometry import rectangle
 from geometry import losange
 from geometry import penrose
+from geometry import r0
 import time
 import csv
 from constants import *

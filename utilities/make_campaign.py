@@ -63,16 +63,16 @@ angles = [angle_max*i/nb_of_rotation for i in range(nb_of_rotation)]
 nb_of_translation = 10
 # ***************************************************
 init_write_header(new_campaign_name, header)
-
+# !!!! NOT DOT IN THE NAME
 for scale in scale_factors:
     length_x = length_x_default_scale*scale
     length_y = length_y_default_scale*scale
     test['geo_parameters'] = f'{L*scale:.3f},{width*scale:.3f}'
-    test['mesh_size'] = f'{width*scale/7:.3f}'
+    test['mesh_size'] = f'{width*scale/5:.3f}'
     for ang_i, angle in enumerate(angles):
         for i_tx in range(nb_of_translation):
             for i_ty in range(nb_of_translation//2 + nb_of_translation % 2):
-                test['test_id'] = f'honey_{scale}_{ang_i}_{i_tx}_{i_ty}'
+                test['test_id'] = f'honey_{int(scale*10)}_{ang_i}_{i_tx}_{i_ty}'
                 tx = length_x*i_tx/nb_of_translation
                 ty = length_y*i_ty/nb_of_translation
                 test['trans_rot'] = f'{tx:.3f},{ty:.3f},{angle}'

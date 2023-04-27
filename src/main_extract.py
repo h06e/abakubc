@@ -11,13 +11,25 @@ def run_script(script: str, arg: list):
     """Don't add .py to the script name"""
     check_call(['abaqus_2021', 'cae', f'noGUI={script}.py', '--']+arg)
 
-def get_job_name_PBC_KUBC (test):
+def get_job_name_PBC_KUBC(test):
     """see KUBC and PBC func, job name cannot contain . char (Abq requirement)
     So i convert the . into %. I also remove () and <space>"""
-    KUBC_name = 'KUBC_'+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameters', 'mat', 'trans_rot']]).replace('.', '%')
+    t = test.copy()
+    for i in t:
+        if len(t[i]) == 0:
+            t[i] = None
+        else:
+            try:
+                t[i] = eval(t[i]) if i != 'sample_name' else t[i]
+            except NameError:
+                pass
+    
+    KUBC_name ='KUBC_'+'_'.join([str(t[i]) for i in ['sample_name', 'geo_parameters', 'mat', 'trans_rot']]).replace('.', '%')
     for char in ['(', ')', ' ']:
         KUBC_name = KUBC_name.replace(char, '')
-    PBC_name = 'PBC_'+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameters', 'mat']]).replace('.', '%')
+    PBC_name = 'PBC_' + \
+        '_'.join([str(t[i]) for i in ['sample_name',
+                                         'geo_parameters', 'mat']]).replace('.', '%')
     for char in ['(', ')', ' ']:
         PBC_name = PBC_name.replace(char, '')
     return KUBC_name, PBC_name
