@@ -11,6 +11,7 @@ from driverUtils import executeOnCaeStartup
 from math import *
 import json
 from constants import *
+from make_job import make_job
 
 def log(message):
     print >> sys.__stdout__, message
@@ -219,24 +220,5 @@ job_name = 'PBC_'+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameter
 for char in ['(', ')', ' ']:
     job_name = job_name.replace(char, '')
 
-mdb.Job(name=job_name, model='Model-1', description='', type=ANALYSIS, 
-    atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, 
-    memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, 
-    explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, 
-    modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', 
-    scratch=os.getcwd(), resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
-      numGPUs=0)
-
-# # * Brute force the writing of the input file because Abq sometime return an error
-# inp_is_written=False
-# while not inp_is_written:
-#     try:
-#         mdb.jobs[job_name].writeInput(consistencyChecking=OFF)  # Write the inp file
-#     except:
-#         pass
-#     else:
-#         inp_is_written=True
-
-mdb.jobs[job_name].submit(consistencyChecking=OFF)
-mdb.jobs[job_name].waitForCompletion()
-
+make_job(mdb, job_name, test, os.getcwd())
+mdb.jobs[job_name].writeInput(consistencyChecking=OFF)

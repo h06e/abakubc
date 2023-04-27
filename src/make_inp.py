@@ -84,17 +84,8 @@ while load:
         load=None
 
 make_assembly.main_assemble_model(test, paths, step_list)
-#mdb.saveAs(pathName='{}.cae'.format(test['test_id']))
+mdb.jobs[test['test_id']].writeInput(consistencyChecking=OFF)
 
-# # * Brute force the writing of the input file because Abq sometime return an error
-# inp_is_written=False
-# while not inp_is_written:
-#     try:
-#         mdb.jobs[test['test_id']].writeInput(consistencyChecking=OFF)  # Write the inp file
-#     except:
-#         time.sleep(0.5)
-#     else:
-#         inp_is_written=True
 
-mdb.jobs[test['test_id']].submit(consistencyChecking=OFF)
-mdb.jobs[test['test_id']].waitForCompletion()
+# mdb.jobs[test['test_id']].submit(consistencyChecking=OFF)
+# mdb.jobs[test['test_id']].waitForCompletion()

@@ -83,7 +83,8 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
         os.remove(f'{KUBC_name}.tmp')
     if PBC_name:
         os.remove(f'{PBC_name}.tmp')
-    if test['debug']!='True':
+    if True: # ? test['debug'] not in ['True', True]
+        print('netoyage')
         shutil.rmtree(test['test_id'])
     
 # * -------------------------------------------
@@ -92,21 +93,23 @@ def run_test(test):
     init_log()
     logging.info(f'START: model {test["test_id"]}')
     # * generate the main inp (the actual test)
-    logging.info('Gen and run of the main test')
+    logging.info('Gen of the main test')
     try:
         check_call(['./sub_run_main.sh', test['test_id'], 'make_inp', str(test).replace(' ', ''), str(paths).replace(' ', '')])
     except:
         return 1
+    jobs_list=[test['test_id']]
     # * generate the inp of KUBC and PBC id needed
     KUBC_name, PBC_name = get_job_name_PBC_KUBC(test)
     if test['sample_name'] in model_with_KUBC_th and\
         f'{KUBC_name}.json' not in os.listdir(paths[THEORY_DIR]) and \
             f'{KUBC_name}.tmp' not in os.listdir(paths[ROOT]):
         open(f'{KUBC_name}.tmp', 'w').close()
-        logging.info('Gen and run of the KUBC')
+        logging.info('Gen of the KUBC')
         try:
             check_call(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_KUBC_{test["sample_name"]}', 
                         str(test).replace(' ', ''), str(paths).replace(' ', '')])
+            jobs_list.append(KUBC_name)
         except Exception as e:
             logging.error('Error while generating the KUBC')
             remove_files_during_run(test, paths, KUBC_name, PBC_name)
@@ -117,18 +120,25 @@ def run_test(test):
         f'{PBC_name}.json' not in os.listdir(paths[THEORY_DIR]) and \
             f'{PBC_name}.tmp' not in os.listdir(paths[ROOT]):
         open(f'{PBC_name}.tmp', 'w').close()
-        logging.info('Gen and run of the PBC')
+        logging.info('Gen of the PBC')
         try:
             logging.debug(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_PBC_{test["sample_name"]}', 
                         str(test).replace(' ', ''), str(paths).replace(' ', '')])
             check_call(['./sub_run_main.sh', test['test_id'], f'th_gen/make_inp_PBC_{test["sample_name"]}', 
                         str(test).replace(' ', ''), str(paths).replace(' ', '')])
+            jobs_list.append(PBC_name)
         except Exception as e:
             logging.error('Error while generating the PBC')
             remove_files_during_run(test, paths, KUBC_name, PBC_name)
             return 3
     else:
         PBC_name = None
+    # * Submit inps
+    try:
+        logging.info('Submission of the inp')
+        check_call(['./sub_run_job.sh']+jobs_list)
+    except:
+        pass
 
     # * Extracting the data
     logging.info('Extracting the data')

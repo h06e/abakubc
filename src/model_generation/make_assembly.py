@@ -16,13 +16,14 @@ import csv
 from constants import *
 from model_generation import make_mono_mesh, make_regular_mesh
 from constants import *
+from make_job import make_job
 
 if __name__ == '__main__':
     connectorBehavior = None  # Just to fix errors in vsc
     regionToolset = None
 
 
-def main_assemble_model(test, paths, step_list):
+def      main_assemble_model(test, paths, step_list):
     if test['dim'] == 3:
         assemble_model(test, paths, step_list)
     else:
@@ -733,13 +734,7 @@ def assemble_model_2d(test, paths, step_list):
 
     model.rootAssembly.regenerate()
     
-    mdb.Job(name=test['test_id'], model='Model-1', description='', type=ANALYSIS,
-            atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90,
-            memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True,
-            explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF,
-            modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='',
-            scratch=os.getcwd(), resultsFormat=ODB, multiprocessingMode=DEFAULT, numCpus=1,
-            numGPUs=0)
+    make_job(mdb, test['test_id'], test, os.getcwd())
 
     mdb.saveAs(pathName='{}.mdb'.format(test["test_id"]))
     # exit()

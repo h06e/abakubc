@@ -235,6 +235,8 @@ def proceed_computation(paths, test):
 
     df = pd.read_csv(f'{campagne_name}.csv', delimiter=';')
     df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m_%d_%H%M")
+    if not test['debug']:
+        df.loc[index_test, 'flag_make_inp'] = 'False'
     df.loc[index_test, 'err'] = str(
         global_deviation.tolist()).replace('[', '').replace(']', '')
     df.to_csv(f'{campagne_name}.csv', index=False, sep=';')

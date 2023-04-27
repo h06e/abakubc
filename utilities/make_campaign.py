@@ -20,7 +20,7 @@ def write_test(new_campaign_name: str, header: str, test: dict) -> None:
     with open(new_campaign_name, 'a') as f:
         f.write(str_test)
 # ***************************************************
-new_campaign_name = 'campagne_honey'
+new_campaign_name = 'campagne_honey.csv'
 
 test = {
     'debug': False,
