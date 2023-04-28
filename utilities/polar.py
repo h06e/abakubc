@@ -4,6 +4,13 @@ import matplotlib.pyplot as plt
 import json
 import os
 
+""" 
+K_field_dic
+K_panto_dic
+K_plane_stress_KUBC
+K_plane_stress_PBC
+ """
+
 def plot_K (K_0,coeff, theory=False):
 
     K_list = []
@@ -32,16 +39,16 @@ def plot_K (K_0,coeff, theory=False):
 
 
 
-test_name='Z_test_honey_2'
+test_name='Z_test_chaine_1'
 campagne_name='campagne_test'
 with open(f'{campagne_name}/results/{test_name}/final_data.json') as f:
     data = json.load(f)
 
-K_db = np.array(data['K_panto_dic'])
-K_PS = np.array(data['K_plane_stress_PBC'])
+
+K_PS = np.array(data['K_panto_dic'])
 plt.subplots(subplot_kw={'projection': 'polar'})
-plot_K(K_db, ((0,0),(1,1), (0,1), (2,2)) )
-plot_K(K_PS, ((0,0),(1,1), (0,1), (2,2)), True )
+plot_K(K_PS, ((0,0),(1,1), (0,1), (2,2)) )
+
 plt.show()
 exit()
 # # * Cf equation 2 de vannucci terme avec R0

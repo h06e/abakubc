@@ -40,7 +40,7 @@ e22 = 0.02
 e12 = 0.02  # Gamma12
 eps12 = e12/2
 
-L = test['geo_parameters'][0]
+
 
 
 if file_name.split('_')[0] == 'KUBC':
@@ -61,6 +61,9 @@ else:
     elif test['sample_name'] == 'hexachiral':
         L, width, radius = test['geo_parameters']
         area = L*2*L*cos(pi/6.0)
+    elif test['sample_name'] == 'r0':
+        scale = test['geo_parameters']
+        area = (20.0*scale)**2
     else:
         raise ValueError
 

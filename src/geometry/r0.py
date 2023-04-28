@@ -26,7 +26,7 @@ def main(paths, test, skip_cylinders):
     make_geo_2d(paths, test, skip_cylinders)
 
 
-def merge(input, output, DELETE, keepIntersections=OFF):
+def merge(input, output, keepIntersections=OFF):
     """fonction qui permet de merge en fonction du nom des instances : celles qui contiennent input"""
     a1 = mdb.models['Model-1'].rootAssembly
     instances = a1.instances.keys()
@@ -36,11 +36,10 @@ def merge(input, output, DELETE, keepIntersections=OFF):
             instances_list = instances_list+(a1.instances[ins],)
     a1.InstanceFromBooleanMerge(name=output, instances=instances_list, originalInstances=DELETE,
                                 domain=GEOMETRY,keepIntersections=keepIntersections)
-    return
+
 
 
 def make_geo_2d(paths, test, skip_cylinders):
-
     scale = test['geo_parameters']
     tx, ty, theta = test['trans_rot']
     # le motif de base fait 20 de cote
@@ -53,6 +52,8 @@ def make_geo_2d(paths, test, skip_cylinders):
         combine=False, dimensionality=TWO_D_PLANAR, type=DEFORMABLE_BODY, 
         scale=scale)
     p = mdb.models['Model-1'].parts['r0_cell']
+
+
 
     a1 = mdb.models['Model-1'].rootAssembly
     a1.DatumCsysByDefault(CARTESIAN)
@@ -67,26 +68,44 @@ def make_geo_2d(paths, test, skip_cylinders):
         0.0), direction2=(0.0, 1.0, 0.0), number1=N, number2=N, spacing1=20.0*scale, 
         spacing2=20.0*scale)
     a.LinearInstancePattern(instanceList=('r0_cell-1', ), direction1=(-1.0, 0.0, 
+        0.0), direction2=(0.0, 1.0, 0.0), number1=N, number2=N, spacing1=20.0*scale, 
+        spacing2=20.0*scale)
+    a.LinearInstancePattern(instanceList=('r0_cell-1', ), direction1=(1.0, 0.0, 
         0.0), direction2=(0.0, -1.0, 0.0), number1=N, number2=N, spacing1=20.0*scale, 
         spacing2=20.0*scale)
-    mdb.saveAs('model.cae')
+    a.LinearInstancePattern(instanceList=('r0_cell-1', ), direction1=(-1.0, 0.0, 
+        0.0), direction2=(0.0, -1.0, 0.0), number1=N, number2=N, spacing1=20.0*scale, 
+        spacing2=20.0*scale)
 
     a = mdb.models['Model-1'].rootAssembly
     merge('r0_cell-1','square', keepIntersections=ON)
 
-    a.rotate(centerPoint=(144.0, 144.0), angle=theta,
-             objectList=('square-1', ))
-    a.move(vector=(tx, ty), objectList=('square-1', ))
+    a.rotate(instanceList=('square-1', ), axisPoint=(144.0, 144.0, 0.0), 
+        axisDirection=(0.0, 0.0, 1.0), angle=theta)
+    a.translate(instanceList=('square-1', ), vector=(tx, ty, 0.0))
 
-    p = mdb.models['Model-1'].parts['Part-1']
-    p.Cut(sketch=s)
+    # First cut
+    print("First cut...")
+    s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__',
+                                                sheetSize=200.0)
+    g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+    s.setPrimaryObject(option=STANDALONE)
+    s.rectangle(point1=(0.0, 0.0), point2=(288.0, 288.0))
+    s.rectangle(point1=(-1000.0, -1000.0), point2=(1000.0, 1000.0))
+    p = mdb.models['Model-1'].Part(name='cutter_1', dimensionality=TWO_D_PLANAR,
+                                   type=DEFORMABLE_BODY)
+    p = mdb.models['Model-1'].parts['cutter_1']
+    p.BaseShell(sketch=s)
     s.unsetPrimaryObject()
+    p = mdb.models['Model-1'].parts['cutter_1']
     del mdb.models['Model-1'].sketches['__profile__']
 
-    a = mdb.models['Model-1'].rootAssembly
-    a.DatumCsysByDefault(CARTESIAN)
-    p = mdb.models['Model-1'].parts['Part-1']
-    a.Instance(name='Part-1-1', part=p, dependent=ON)
+    mdb.models['Model-1'].rootAssembly.Instance(
+        dependent=ON, name='cutter_1-1', part=mdb.models['Model-1'].parts['cutter_1'])
+    mdb.models['Model-1'].rootAssembly.InstanceFromBooleanCut(cuttingInstances=(
+        mdb.models['Model-1'].rootAssembly.instances['cutter_1-1'], ),
+        instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['square-1'],
+        name='cell_square-1', originalInstances=DELETE)
 
     s1 = mdb.models['Model-1'].ConstrainedSketch(
         name='__profile__', sheetSize=200.0)
@@ -116,11 +135,14 @@ def make_geo_2d(paths, test, skip_cylinders):
     log(mdb.models['Model-1'].rootAssembly.instances.keys())
     a1 = mdb.models['Model-1'].rootAssembly
     a1.InstanceFromBooleanCut(name='struct_no_support',
-                              instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['Part-1-1'],
+                              instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['cell_square-1-1'],
                               cuttingInstances=(a1.instances['cutter_2-1'], ),
                               originalInstances=DELETE)
 
     print("Cuts completed")
+
+    # mdb.saveAs(pathName='{}.cae'.format(test['test_id']))
+    # exit()
 
     # .py file adding the support
     mdb.openAcis(os.path.join(paths[SRC], 'ressources', 'support_2d.sat'),

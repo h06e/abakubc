@@ -229,6 +229,9 @@ def proceed_computation(paths, test):
 
     # * update de la campagne
 
+    while 'campagne.lck' in os.listdir():
+        time.sleep(0.2)
+    open('campagne.lck','w')
     campagne_name = paths[RES_DIR].split('/')[-2]
     header, campagne = manipulation.read_campagne(campagne_name)
     index_test = next((idx for (idx, t) in enumerate(campagne)
@@ -241,7 +244,7 @@ def proceed_computation(paths, test):
     df.loc[index_test, 'err'] = str(
         global_deviation.tolist()).replace('[', '').replace(']', '')
     df.to_csv(f'{campagne_name}.csv', index=False, sep=';')
-
+    os.remove('campagne.lck')
     if not test['keep_odb']:
         for file in os.listdir(res_folder):
             if 'step' in file or 'node' in file or 'elements' in file or 'connectivity' in file:
