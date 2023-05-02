@@ -45,10 +45,12 @@ with open(f'{campagne_name}/results/{test_name}/final_data.json') as f:
     data = json.load(f)
 
 
-K_PS = np.array(data['K_panto_dic'])
-plt.subplots(subplot_kw={'projection': 'polar'})
-plot_K(K_PS, ((0,0),(1,1), (0,1), (2,2)) )
+K_1 = np.array(data['K_panto_dic'])
+K_2 = np.array(data['K_plane_stress_PBC'])
 
+plt.subplots(subplot_kw={'projection': 'polar'})
+plot_K(K_1, ((0,0),(1,1), (0,1), (2,2)) )
+plot_K(K_2, ((0,0),(1,1), (0,1), (2,2)), True )
 plt.show()
 exit()
 # # * Cf equation 2 de vannucci terme avec R0

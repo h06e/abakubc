@@ -91,10 +91,10 @@ def make_geo_2d(paths, test, skip_cylinders):
                                                           a1.instances['Part-3-1-rad-4'], a1.instances['Part-3-1-rad-5'],
                                                           a1.instances['Part-3-1-rad-6'], ), originalInstances=DELETE,
                                 domain=GEOMETRY)
-    a1.rotate(instanceList=('Part-4-1', ), axisPoint=(0.0, 0.0, 0.0),
-              axisDirection=(0.0, 0.0, 1.0), angle=-180/pi*asin((radius-width/2)/(L/2.0)))
     mdb.models['Model-1'].rootAssembly.translate(
         instanceList=('Part-4-1',), vector=(288.0/2, 288.0/2, 0.0))
+    a1.rotate(instanceList=('Part-4-1', ), axisPoint=(0.0, 0.0, 0.0),
+              axisDirection=(0.0, 0.0, 1.0), angle=-180/pi*asin((radius-width/2)/(L/2.0)))
     # Arrays
     print("Array...")
     a1 = mdb.models['Model-1'].rootAssembly

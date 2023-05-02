@@ -127,10 +127,10 @@ merge('cell-7', 'cell_infini-1', DELETE)
 mdb.models['Model-1'].rootAssembly.features.changeKey(
     fromName='cell_infini-1-1', toName='cell_infini-1')
 # Rotation et translation finale
-mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0,
-                                                                        1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('cell_infini-1', ))
 mdb.models['Model-1'].rootAssembly.translate(
     instanceList=('cell_infini-1',), vector=(tx, ty, 0.0))
+mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0,
+                                                                        1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('cell_infini-1', ))
 
 # First cut
 print("First cut...")

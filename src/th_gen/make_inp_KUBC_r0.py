@@ -89,9 +89,9 @@ a.LinearInstancePattern(instanceList=('r0_cell-1', ), direction1=(-1.0, 0.0,
 a = mdb.models['Model-1'].rootAssembly
 merge('r0_cell-1','square', keepIntersections=ON)
 
+a.translate(instanceList=('square-1', ), vector=(tx, ty, 0.0))
 a.rotate(instanceList=('square-1', ), axisPoint=(144.0, 144.0, 0.0), 
     axisDirection=(0.0, 0.0, 1.0), angle=theta)
-a.translate(instanceList=('square-1', ), vector=(tx, ty, 0.0))
 
 # First cut
 print("First cut...")

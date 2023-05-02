@@ -28,12 +28,16 @@
 
 test.py
 campagne_honey.csv
+campagne_honey_2.csv
 
+campagne_honey/
+campagne_honey_2/
 campagne_test/
 porosity/
 sample_bank/
 theory_matix_bank/
 theory_matrix_bank/
+tmp/
 
 src/func/__pycache__/
 src/__pycache__/

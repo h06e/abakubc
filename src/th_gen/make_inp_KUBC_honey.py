@@ -98,9 +98,9 @@ s.linearPattern(geomList=(g[18], g[19], g[20], g[21], g[22], g[23]), vertexList=
 ), number1=Nx, spacing1=L, angle1=0.0, number2=Ny, spacing2=2*(aa+2*bb),
     angle2=90.0)
 
+s.move(vector=(tx, ty), objectList=tuple(gg[1] for gg in g.items()))
 s.rotate(centerPoint=(144.0, 144.0), angle=theta,
          objectList=tuple(gg[1] for gg in g.items()))
-s.move(vector=(tx, ty), objectList=tuple(gg[1] for gg in g.items()))
 
 p = mdb.models['Model-1'].parts['Part-1']
 p.Cut(sketch=s)

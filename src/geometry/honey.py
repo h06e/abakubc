@@ -121,9 +121,9 @@ def make_geo (paths, test, skip_cylinders):
         number2=2, spacing1=L*Nx, spacing2=Ny*2*(aa+2*bb))
     merge('cell-4','cell_infini',DELETE)
     # Rotation et translation finale
+    mdb.models['Model-1'].rootAssembly.translate(instanceList=('cell_infini-1',), vector=(tx, ty, 0.0))
     mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0, 
         1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('cell_infini-1', ))
-    mdb.models['Model-1'].rootAssembly.translate(instanceList=('cell_infini-1',), vector=(tx, ty, 0.0))
 
 
     # First cut
@@ -259,8 +259,8 @@ def make_geo_2d(paths, test, skip_cylinders):
         ), number1=Nx, spacing1=L, angle1=0.0, number2=Ny, spacing2=2*(aa+2*bb), 
         angle2=90.0)
 
-    s.rotate(centerPoint=(144.0, 144.0), angle=theta, objectList=tuple(gg[1] for gg in g.items()))
     s.move(vector=(tx,ty),objectList=tuple(gg[1] for gg in g.items()))
+    s.rotate(centerPoint=(144.0, 144.0), angle=theta, objectList=tuple(gg[1] for gg in g.items()))
 
     p = mdb.models['Model-1'].parts['Part-1']
     p.Cut(sketch=s)

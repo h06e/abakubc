@@ -37,7 +37,7 @@ tol = 0.01
 E, nu = test['mat']        # DE base, E_air=0.0001 et nu_air=0.3
 
 # Geo
-tx , ty, theta = test['trans_rot']
+
 
 def merge(input, output,DELETE=DELETE): 
     """fonction qui permet de merge en fonction du nom des instances : celles qui contiennent input"""
@@ -123,9 +123,9 @@ mdb.models['Model-1'].rootAssembly.InstanceFromBooleanMerge(domain=GEOMETRY,
     mdb.models['Model-1'].rootAssembly.instances['Part-2-1']), name='Primary', 
     originalInstances=DELETE)
 
+mdb.models['Model-1'].rootAssembly.translate(instanceList=('Primary-1',), vector=(tx, ty, 0.0))
 mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0, 
     1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('Primary-1', ))
-mdb.models['Model-1'].rootAssembly.translate(instanceList=('Primary-1',), vector=(tx, ty, 0.0))
 
 
 # First cut

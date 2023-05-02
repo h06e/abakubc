@@ -5,14 +5,16 @@ import sys
 from subprocess import check_call
 import os
 from constants import *
-import glob
 import main_extract
 import main_compute
 import shutil
 import logging
 from constants import *
 from random import random
-
+from pathlib import Path
+import pandas as pd
+from func import manipulation
+import json
 
 def remove_files(path: str, types_to_remove: list[str] = []) -> None:
     """Remove files by type """
@@ -78,7 +80,7 @@ def submit_job_custom(job,number_of_cpu,scratch):
 def init_log(open_in_vsc=False):
     i = 1
     # * if not this random delay, multiple cpu can write into the same log
-    time.sleep(random())
+    time.sleep(random()*2)
     while f'{i:03.0f}_log.log' in os.listdir(os.getcwd()):
         i += 1
     logging.basicConfig(filename=f'{i:03.0f}_log.log', encoding='utf-8', level=logging.DEBUG,
@@ -106,7 +108,8 @@ def run_test(test):
     try:
         check_call(['./sub_run_main.sh', test['test_id'], 'make_inp', str(test).replace(' ', ''), str(paths).replace(' ', '')])
     except:
-        remove_files_during_run(test, paths)
+        if not DEBUG:
+            remove_files_during_run(test, paths)
         return 1
     jobs_list=[test['test_id']]
     # * generate the inp of KUBC and PBC id needed
@@ -122,7 +125,8 @@ def run_test(test):
             jobs_list.append(KUBC_name)
         except Exception as e:
             logging.error('Error while generating the KUBC')
-            remove_files_during_run(test, paths, KUBC_name, PBC_name)
+            if not DEBUG:
+                remove_files_during_run(test, paths, KUBC_name, PBC_name)
             return 2
     else:
         KUBC_name = None
@@ -139,7 +143,8 @@ def run_test(test):
             jobs_list.append(PBC_name)
         except Exception as e:
             logging.error('Error while generating the PBC')
-            remove_files_during_run(test, paths, KUBC_name, PBC_name)
+            if not DEBUG:
+                remove_files_during_run(test, paths, KUBC_name, PBC_name)
             return 3
     else:
         PBC_name = None
@@ -156,7 +161,8 @@ def run_test(test):
         main_extract.proceed_extract_bis(paths, test, KUBC_name, PBC_name)
     except Exception as e:
         logging.error('Error while extracting the data')
-        remove_files_during_run(test, paths, KUBC_name, PBC_name)
+        if not DEBUG:
+            remove_files_during_run(test, paths, KUBC_name, PBC_name)
         return 5
     # * Computing the result
     logging.info('Computing the data')
@@ -164,7 +170,8 @@ def run_test(test):
         main_compute.proceed_computation(paths, test)
     except Exception as e:
         logging.error('Error while the computation')
-        #remove_files_during_run(test, paths, KUBC_name, PBC_name)
+        if not DEBUG:
+            remove_files_during_run(test, paths, KUBC_name, PBC_name)
         return 6
     # * Deal with the odbs
     if test['keep_odb']:
@@ -177,7 +184,8 @@ def run_test(test):
         shutil.move(os.path.join(test['test_id'],f'{test["test_id"]}.odb'), os.path.join(
             paths[ODB_STOCK_DIR], f'{test["test_id"]}.odb'))
     # * Remove files
-    remove_files_during_run(test, paths, KUBC_name, PBC_name)
+    if not DEBUG:
+        remove_files_during_run(test, paths, KUBC_name, PBC_name)
     logging.info(f'test {test["test_id"]} COMPLETED')
     return 0
 
@@ -205,6 +213,9 @@ with Pool(processes=N_TASK-1) as pool:
     for r in results:
         print(f'Status: {r}')
 
+# * Update of the campagne
+
+func.update_campagne(campagne_name)
 
 # * Essaye d'envoyer une notification de bureau
 try:

@@ -111,10 +111,10 @@ def make_geo_2d(paths, test, skip_cylinders):
                                                                            mdb.models['Model-1'].rootAssembly.instances['Part-2-1']), name='Primary',
                                                                 originalInstances=DELETE)
 
-    mdb.models['Model-1'].rootAssembly.rotate(angle=theta-angle/2.0, axisDirection=(0.0, 0.0,
-                                                                                    1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('Primary-1', ))
     mdb.models['Model-1'].rootAssembly.translate(
         instanceList=('Primary-1',), vector=(tx, ty, 0.0))
+    mdb.models['Model-1'].rootAssembly.rotate(angle=theta-angle/2.0, axisDirection=(0.0, 0.0,
+                                                                                    1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('Primary-1', ))
 
     # First cut
     print("First cut...")

@@ -13,14 +13,16 @@ def init_write_header(new_campaign_name: str, header: str) -> None:
 
 def write_test(new_campaign_name: str, header: str, test: dict) -> None:
     """Write the test into the campagne file"""
-    str_test='\n'
-    parameters=header.replace('\n','').split(';')
+    str_test = '\n'
+    parameters = header.replace('\n', '').split(';')
     for p in parameters:
         str_test += f'{test[p]};'
     with open(new_campaign_name, 'a') as f:
         f.write(str_test)
+
+
 # ***************************************************
-new_campaign_name = 'campagne_honey.csv'
+new_campaign_name = 'campagne_honey_2.csv'
 
 test = {
     'debug': False,
@@ -63,7 +65,7 @@ angles = [angle_max*i/nb_of_rotation for i in range(nb_of_rotation)]
 nb_of_translation = 10
 # ***************************************************
 init_write_header(new_campaign_name, header)
-# !!!! NOT DOT IN THE NAME
+
 for scale in scale_factors:
     length_x = length_x_default_scale*scale
     length_y = length_y_default_scale*scale
@@ -71,9 +73,12 @@ for scale in scale_factors:
     test['mesh_size'] = f'{width*scale/5:.3f}'
     for ang_i, angle in enumerate(angles):
         for i_tx in range(nb_of_translation):
-            for i_ty in range(nb_of_translation//2 + nb_of_translation % 2):
+            for i_ty in range(nb_of_translation//2 + nb_of_translation % 2): 
+                # !!!! NOT DOT IN THE NAME
                 test['test_id'] = f'honey_{int(scale*10)}_{ang_i}_{i_tx}_{i_ty}'
-                tx = length_x*i_tx/nb_of_translation
-                ty = length_y*i_ty/nb_of_translation
+                tx = length_x * i_tx/nb_of_translation
+                ty = length_y * i_ty/nb_of_translation
+
                 test['trans_rot'] = f'{tx:.3f},{ty:.3f},{angle}'
+                print(f'{length_x*cos(angle*pi/180) =}, {length_y =}')
                 write_test(new_campaign_name, header, test)

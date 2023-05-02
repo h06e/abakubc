@@ -76,7 +76,7 @@ def make_geo_2d(paths, test, skip_cylinders):
     s.rectangle(point1=(-12.5, -12.5), point2=(12.5, 12.5))
     s.scale(objectList=tuple(gg[1] for gg in g.items()), scaleCenter=(
         0.0, 0.0), scaleValue=scale)
-    s.move(vector=(144.0,144.0),objectList=tuple(gg[1] for gg in g.items()))
+    s.move(vector=(144.0, 144.0), objectList=tuple(gg[1] for gg in g.items()))
     p = mdb.models['Model-1'].Part(name='Part-1', dimensionality=TWO_D_PLANAR,
                                    type=DEFORMABLE_BODY)
     p = mdb.models['Model-1'].parts['Part-1']
@@ -89,6 +89,11 @@ def make_geo_2d(paths, test, skip_cylinders):
 
     mdb.models['Model-1'].rootAssembly.Instance(
         dependent=ON, name='Part-1-1', part=mdb.models['Model-1'].parts['Part-1'])
+
+    mdb.models['Model-1'].rootAssembly.translate(
+        instanceList=('Part-1-1',), vector=(tx, ty, 0.0))
+    mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0,
+                                                                          1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('Part-1-1', ))
 
     # First cut
     print("First cut...")
