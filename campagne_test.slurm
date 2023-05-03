@@ -2,7 +2,7 @@
 #
 #SBATCH --job-name=map_abq
 #SBATCH --output=%x.o%j
-#SBATCH --ntasks=5
+#SBATCH --ntasks=2
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=30gb
 #SBATCH --time=100:00:00

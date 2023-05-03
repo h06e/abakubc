@@ -73,7 +73,7 @@ for scale in scale_factors:
     test['mesh_size'] = f'{width*scale/5:.3f}'
     for ang_i, angle in enumerate(angles):
         for i_tx in range(nb_of_translation):
-            for i_ty in range(nb_of_translation//2 + nb_of_translation % 2): 
+            for i_ty in range(nb_of_translation//2 + nb_of_translation % 2):
                 # !!!! NOT DOT IN THE NAME
                 test['test_id'] = f'honey_{int(scale*10)}_{ang_i}_{i_tx}_{i_ty}'
                 tx = length_x * i_tx/nb_of_translation

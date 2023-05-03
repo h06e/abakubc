@@ -1,6 +1,7 @@
 from PIL import Image
 from pathlib import Path
 import shutil
+import numpy as np
 
 
 class Info:
@@ -41,19 +42,38 @@ class Test(Info):
         self.strain_th = results['strain_th']
         self.stress_field = results['stress_field']
         self.stress_pantos = results['stress_pantos']
-        self.campagne=campagne
+        self.campagne = campagne
 
     def get_number_ms(self) -> int:
         return sum([len(i) for i in self.skipped_cyl])
 
     def show_geo(self) -> None:
-        root=Path('.')
+        root = Path('.')
         image = Image.open(root/self.campagne/'results'/self.test_id/'geo.png')
         image.show()
 
     def export_geo(self, destination=Path('.')) -> None:
-        root=Path('.')
-        shutil.copyfile(root/self.campagne/'results'/self.test_id/'geo.png', destination/f'{self.test_id}.png')
+        root = Path('.')
+        shutil.copyfile(root/self.campagne/'results'/self.test_id /
+                        'geo.png', destination/f'{self.test_id}.png')
+
+    def get_err(self, err: tuple) -> float:
+        return self.global_err[err[0]][err[1]]
+
+    def get_MS(self) -> np.ndarray:
+        m = np.zeros((4, 10))
+        for i_cote, cote in enumerate(self.skipped_cyl):
+            for support in cote:
+                m[i_cote, support] = 1.0
+        return m
+
+    def get_MS_corner(self) -> np.ndarray:
+        """return the m matrix [corner, idex_support] the coef is in [0,0.5,1.0]"""
+        m_MS=self.get_MS()
+        m= np.zeros((4, 5))
+        for corner in range(4):
+            m[corner]=0.5*(np.flip(m_MS[corner,5:])+m_MS[(corner+1)%4,:5])
+        return m
 
 if __name__ == '__main__':
     pass

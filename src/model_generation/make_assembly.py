@@ -23,7 +23,7 @@ if __name__ == '__main__':
     regionToolset = None
 
 
-def      main_assemble_model(test, paths, step_list):
+def main_assemble_model(test, paths, step_list):
     if test['dim'] == 3:
         assemble_model(test, paths, step_list)
     else:
@@ -217,7 +217,7 @@ def assemble_model(test, paths, step_list):
 
                     # Create connector
                     create_connector_section(
-                        'cs_'+point_name, test['stiff_panto'][0] if cote in [0, 2] else test['stiff_panto'], prop_connectors, test)
+                        'cs_'+point_name, test['stiff_panto'][0] if cote in [0, 2] else test['stiff_panto'][1], prop_connectors, test)
                     # Assign connector section to the wire
                     e1 = a.edges
                     edges1 = e1.findAt(
@@ -493,10 +493,8 @@ def assemble_model_2d(test, paths, step_list):
         for row in reader:
             skip_cylinders.append(map(int, row))
 
-
     mdb.openAcis(os.path.join(paths[SAMPLE_BANK_DIR], '{}.sat'.format(
         geometry_name)), scaleFromFile=OFF)
-    
 
     model.PartFromGeometryFile(
         combine=False, dimensionality=TWO_D_PLANAR, geometryFile=mdb.acis,
@@ -733,7 +731,7 @@ def assemble_model_2d(test, paths, step_list):
                                         set_name, avg_stress_set_name)
 
     model.rootAssembly.regenerate()
-    
+
     make_job(mdb, test['test_id'], test, os.getcwd())
 
     mdb.saveAs(pathName='{}.mdb'.format(test["test_id"]))

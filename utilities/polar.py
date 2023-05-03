@@ -11,6 +11,10 @@ K_plane_stress_KUBC
 K_plane_stress_PBC
  """
 
+
+
+
+
 def plot_K (K_0,coeff, theory=False):
 
     K_list = []

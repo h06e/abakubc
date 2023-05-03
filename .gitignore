@@ -29,7 +29,11 @@
 test.py
 campagne_honey.csv
 campagne_honey_2.csv
+campagne_mono.csv
+campagne_mono.slurm
+campagne_honey_CC.csv
 
+campagne_mono/
 campagne_honey/
 campagne_honey_2/
 campagne_test/

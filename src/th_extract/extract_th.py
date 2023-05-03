@@ -47,6 +47,7 @@ if file_name.split('_')[0] == 'KUBC':
     area = 288*288
 else:
     if test['sample_name'] == 'honey':
+        L, width = test['geo_parameters']
         aa = L/2/tan(pi/3)
         bb = L/2*tan(pi/6)
         area = 2*(aa+2*bb)*L

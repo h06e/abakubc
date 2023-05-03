@@ -94,7 +94,7 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
         os.remove(f'{KUBC_name}.tmp')
     if PBC_name:
         os.remove(f'{PBC_name}.tmp')
-    if False: # ? test['debug'] not in ['True', True]
+    if not DEBUG: 
         print('netoyage')
         shutil.rmtree(test['test_id'])
     
@@ -108,6 +108,7 @@ def run_test(test):
     try:
         check_call(['./sub_run_main.sh', test['test_id'], 'make_inp', str(test).replace(' ', ''), str(paths).replace(' ', '')])
     except:
+        logging.error('Error while generating the main test')
         if not DEBUG:
             remove_files_during_run(test, paths)
         return 1
