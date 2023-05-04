@@ -12,7 +12,7 @@ This will likely motivate a further study with a minimizing algorithm
 
 
 # * Importing the data from the campaign.
-campagnes = ['campagne_honey']
+campagnes = ['campagne_honey_CC']
 data = get_bulk_data(read_data_from_campaigns(campagnes))
 
 

@@ -50,7 +50,9 @@ def update_campagne(campagne_name):
                         if t['test_id'] == test_name), None)
 
         df = pd.read_csv(f'{campagne_name}.csv', delimiter=';')
-        df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m_%d_%H%M")
-        df.loc[index_test, 'flag_make_inp'] = 'False'
-        df.loc[index_test, 'err'] = str(data['global_err']).replace('[', '').replace(']', '')
-        df.to_csv(f'{campagne_name}.csv', index=False, sep=';')
+        if df.loc[index_test, 'flag_make_inp'] == 'True':
+            # This line was computed during this run
+            df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m_%d_%H%M")
+            df.loc[index_test, 'flag_make_inp'] = 'False'
+            df.loc[index_test, 'err'] = str(data['global_err']).replace('[', '').replace(']', '')
+            df.to_csv(f'{campagne_name}.csv', index=False, sep=';')

@@ -19,24 +19,19 @@ print(get_barycentre(test, True))
 #* Error of interest
 EOI=(0,3)
 function=['get_mean_MS','get_mean_MS_worse_side','get_mean_MS_worse_side_pair',
-          'get_mean_MS_worse_corner', 'get_max_MS_consecutive', 'get_barycentre']
+          'get_mean_MS_worse_corner', 'get_max_MS_consecutive']
 
 plt.figure(figsize=(20,5))
 for i, func in enumerate(function):
-    data_raw=[]
-    data_fit=[]
-    for test_id,test in data.items():
+    err=[]
+    criteria=[]
+    for _,test in data.items():
         if eval(func)(test) is not None:
-            data_raw.append(test.get_err(EOI))
-            data_fit.append(eval(func)(test))
-
-    plt.subplot(161+i)
-    if func in ['get_barycentre']:
-        plt.scatter(data_fit,data_raw,0.3)
-    else:
-        plot_box(data_fit,data_raw)
-    plt.xlabel(f'critère {func}')
-    plt.ylabel('erreur')
+            err.append(test.get_err(EOI))
+            criteria.append(eval(func)(test))
+    plt.subplot(151+i)
+    plot_box2(criteria,err, step=0.1, ylabel=f'{func}')
+    
 
 plt.tight_layout()
 plt.show()

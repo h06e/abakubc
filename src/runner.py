@@ -93,7 +93,10 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
     if KUBC_name:
         os.remove(f'{KUBC_name}.tmp')
     if PBC_name:
-        os.remove(f'{PBC_name}.tmp')
+        try:
+            os.remove(f'{PBC_name}.tmp')
+        except:
+            pass
     if not DEBUG: 
         print('netoyage')
         shutil.rmtree(test['test_id'])
@@ -196,11 +199,11 @@ def run_test(test):
 # *******************************************
 
 # * reset the folder
-# ! DEBUG MODE
+# ! DEBUG MODE Will remove all folders except the ones below !!
 DEBUG=False
 if DEBUG:
     for file in os.listdir(os.getcwd()):
-        if not os.path.isfile(file) and file not in ['utilities', 'src', '.git']:
+        if not os.path.isfile(file) and file not in ['utilities', 'src', '.git', 'images']:
             shutil.rmtree(file)
     time.sleep(1)
 

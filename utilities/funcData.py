@@ -96,6 +96,7 @@ def get_mean_MS_worse_side_pair(test: Test) -> float:
 
 
 def get_mean_MS_worse_corner(test: Test) -> float:
+    mat_MS = test.get_MS()
     mat_MS_corner = test.get_MS_corner()
     return np.max(np.mean(mat_MS_corner, axis=1))
 
@@ -146,6 +147,7 @@ def plot_box(X, Y):
         else:
             X_bulk.append(x)
             Y_bulk.append([y])
+            print(old)
             old = x
     y_mean = []
     y_q1 = []
@@ -172,6 +174,37 @@ def plot_box(X, Y):
                  fmt='b_', ecolor='b', lw=1, capsize=2)
     plt.plot(X_bulk, y_mean, 'b:')
 
+def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str=''):
+    X_sorted, Y_sorted = (list(t) for t in zip(*sorted(zip(X, Y))))
+    old = X_sorted[0]
+    X_bulk, Y_bulk, number_per_x= [old], [[]], []
+    counter=0
+    for x, y in zip(X_sorted, Y_sorted):
+        if x<old+step:
+            Y_bulk[-1].append(y)
+            counter+=1
+            continue
+        number_per_x.append(counter)
+        X_bulk.append(x)
+        Y_bulk.append([y])
+        old = x
+        counter=0
+    number_per_x.append(counter)
+    y_mean = []
+    for y in Y_bulk:
+        y_mean.append(np.mean(np.array(y)))
+    y_mean = np.array(y_mean)
+
+    plt.violinplot(Y_bulk, X_bulk,widths=width,
+                   showmeans=False, showmedians=False, showextrema=False)
+    plt.plot(X_bulk, y_mean, 'b:')
+    plt.xlabel(f'critère {ylabel}')
+    plt.ylabel('erreur')
+    ax2=plt.twinx()
+    ax2.set_ylim(bottom=0, top=1.2*np.max(number_per_x))
+    ax2.plot(X_bulk, number_per_x, 'ro')
+    ax2.set_ylabel('Number per case', color='r')
+    ax2.tick_params(axis='y', colors='red')
 
 if __name__ == '__main__':
     data = read_data_from_campaigns(['campagne_test'])
