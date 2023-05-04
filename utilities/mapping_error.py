@@ -62,7 +62,6 @@ plt.xticks(range(13), [f'{2.5*i}°' for i in range(13)])
 plt.legend()
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 plt.xlabel('Angle [°]')
-global title
 plt.ylabel(f'Error distribution [%]')
 plt.tight_layout()
 plt.draw()
@@ -74,19 +73,25 @@ print(
 
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-# * Plot les coef des matrices de rigité de l'echelle 7/10 comparé au PBC tourné matriciellement
+# * Plot les coef des matrices de rigité de l'echelle 7/10 comparé au KUBC et PBC tourné matriciellement
 
 small_scale_test = get_tests_by_test_id(data, index=1, target='7')
 
 data_per_angle = np.empty((N_theta+1, N_tx, N_ty, 3, 3))
 data_per_angle[:] = np.nan
+data_per_angle_KUBC = np.empty((N_theta+1, N_tx, N_ty, 3, 3))
+data_per_angle_KUBC[:] = np.nan
 for test_id, test in small_scale_test.items():
     _, angle, idx, idy = tuple(map(int, test_id.split('_')[1:]))
     data_per_angle[angle, idx,
                    idy, :, :] = np.array(test.K_panto_dic)
+    data_per_angle_KUBC[angle, idx,
+                   idy, :, :] = np.array(test.K_plane_stress_KUBC)
     if angle == 0:  # Periodicite à 30°
         data_per_angle[-1, idx,
                        idy, :, :] = np.array(test.K_panto_dic)
+        data_per_angle_KUBC[-1, idx,
+                       idy, :, :] = np.array(test.K_plane_stress_KUBC)
 
 data_per_angle_mean = np.nanmean(data_per_angle, axis=(1, 2))
 data_per_angle_q1 = np.nanquantile(data_per_angle, 0.25, axis=(1, 2))
@@ -94,10 +99,17 @@ data_per_angle_q2 = np.nanquantile(data_per_angle, 0.75, axis=(1, 2))
 data_per_angle_min = np.nanmin(data_per_angle, axis=(1, 2))
 data_per_angle_max = np.nanmax(data_per_angle, axis=(1, 2))
 
+data_per_angle_KUBC_mean = np.nanmean(data_per_angle_KUBC, axis=(1, 2))
+data_per_angle_KUBC_q1 = np.nanquantile(data_per_angle_KUBC, 0.25, axis=(1, 2))
+data_per_angle_KUBC_q2 = np.nanquantile(data_per_angle_KUBC, 0.75, axis=(1, 2))
+data_per_angle_KUBC_min = np.nanmin(data_per_angle_KUBC, axis=(1, 2))
+data_per_angle_KUBC_max = np.nanmax(data_per_angle_KUBC, axis=(1, 2))
+
+
 theorique = test.K_plane_stress_PBC
 
-coefs = ((0, 0), (0, 1), (1, 1), (2, 2))
-leg = ('K11', 'K12', 'K22', 'K33')
+coefs = ((0, 0), (0, 1), (2, 2))
+leg = ('K11', 'K12', 'K33')
 col = ['b', 'r', 'g', 'm']
 plt.figure()
 x = np.linspace(0, 30, N_theta+1)
@@ -106,6 +118,11 @@ for idx, coef in enumerate(coefs):
                  fmt=col[idx]+'_', lw=3, ms=1, label=f'{leg[idx]}')
     plt.errorbar(x, data_per_angle_mean[:, coef[0], coef[1]], [data_per_angle_mean[:, coef[0], coef[1]]-data_per_angle_min[:, coef[0], coef[1]], data_per_angle_max[:, coef[0], coef[1]] - data_per_angle_mean[:, coef[0], coef[1]]],
                  fmt=col[idx]+'_', ecolor=col[idx], lw=1, capsize=2)
+    
+    plt.errorbar(x+0.5, data_per_angle_KUBC_mean[:, coef[0], coef[1]], [data_per_angle_KUBC_mean[:, coef[0], coef[1]]-data_per_angle_KUBC_q1[:, coef[0], coef[1]], data_per_angle_KUBC_q2[:, coef[0], coef[1]] - data_per_angle_KUBC_mean[:, coef[0], coef[1]]],
+                 fmt='k_', lw=3, ms=1, label=f'{leg[idx]} KUBC')
+    plt.errorbar(x+0.5, data_per_angle_KUBC_mean[:, coef[0], coef[1]], [data_per_angle_KUBC_mean[:, coef[0], coef[1]]-data_per_angle_KUBC_min[:, coef[0], coef[1]], data_per_angle_KUBC_max[:, coef[0], coef[1]] - data_per_angle_KUBC_mean[:, coef[0], coef[1]]],
+                 fmt='k_', ecolor='k', lw=1, capsize=2)
 
 xx = np.linspace(0, 30, 200)
 K_list = []
