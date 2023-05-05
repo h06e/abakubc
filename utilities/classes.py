@@ -2,6 +2,7 @@ from PIL import Image
 from pathlib import Path
 import shutil
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Info:
@@ -48,9 +49,23 @@ class Test(Info):
         return sum([len(i) for i in self.skipped_cyl])
 
     def show_geo(self) -> None:
-        root = Path('.')
-        image = Image.open(root/self.campagne/'results'/self.test_id/'geo.png')
-        image.show()
+        root = Path('.').absolute().parent
+        rgba = Image.open(root/self.campagne/'results' /
+                         self.test_id/'geo.png').crop((588, 192, 1331, 935))
+        mono= rgba.split()[-1]
+        mono=np.array(mono)>0.01
+        image = np.asarray(mono)
+        plt.imshow(image, cmap='Greys')
+        plt.show()
+    
+    def get_geo(self) -> np.ndarray:
+        root = Path('.').absolute().parent
+        rgba = Image.open(root/self.campagne/'results' /
+                         self.test_id/'geo.png').crop((588, 192, 1331, 935))
+        mono= rgba.split()[-1]
+        mono=np.array(mono)>0.01
+        image = np.asarray(mono)
+        return image
 
     def export_geo(self, destination=Path('.')) -> None:
         root = Path('.')
@@ -69,11 +84,13 @@ class Test(Info):
 
     def get_MS_corner(self) -> np.ndarray:
         """return the m matrix [corner, idex_support] the coef is in [0,0.5,1.0]"""
-        m_MS=self.get_MS()
-        m= np.zeros((4, 5))
+        m_MS = self.get_MS()
+        m = np.zeros((4, 5))
         for corner in range(4):
-            m[corner]=0.5*(np.flip(m_MS[corner,5:])+m_MS[(corner+1)%4,:5])
+            m[corner] = 0.5*(np.flip(m_MS[corner, 5:]) +
+                             m_MS[(corner+1) % 4, :5])
         return m
+
 
 if __name__ == '__main__':
     pass
