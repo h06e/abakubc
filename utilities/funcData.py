@@ -226,17 +226,17 @@ def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str=''):
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
 
-def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:float, ymax:float) -> None:
+def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:float, ymax:float, loop=False) -> None:
     """N_theta, N_scale, N_tx, N_ty = data_size"""
     N_theta, N_scale, N_tx, N_ty = data_size
   
-    error_per_angle = np.empty((N_theta+1, N_scale, N_tx, N_ty))
+    error_per_angle = np.empty((N_theta+1*loop, N_scale, N_tx, N_ty))
     error_per_angle[:] = np.nan
     for test_id, test in data.items():
         scale, angle, idx, idy = tuple(map(int, test_id.split('_')[1:]))
         error_per_angle[angle, scale-7, idx,
                         idy] = test.global_err[eoi[0]][eoi[1]]
-        if angle == 0:
+        if angle == 0 and loop:
             error_per_angle[-1, scale-7, idx,
                             idy] = test.global_err[eoi[0]][eoi[1]]
 
@@ -247,7 +247,7 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
     error_per_angle_max = np.nanmax(error_per_angle, axis=(2, 3))
 
     plt.figure(figsize=(12, 4))
-    x = np.linspace(0, N_theta, N_theta+1)-0.5+1/N_theta
+    x = np.linspace(0, N_theta, N_theta+1*loop)-0.5+1/(N_theta)
     col = ['b', 'g', 'r', 'm', 'k', 'c', 'y']
     leg = [f'{i}/10 scale' for i in range(7, 14)]
 
@@ -261,12 +261,12 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
                 plt.text(x[i]+scale/N_scale,
                         ymax, f'{m:.0f}', ha='center', fontsize=8)
 
-    for i in range(12):
+    for i in range(N_theta-1+1*loop):
         plt.axvline(x=i+0.5, color='k', ls='--', lw=1.0)
 
     plt.ylim((0, ymax))
     plt.xlim((-0.5, N_theta+0.5))
-    plt.xticks(range(N_theta+1), [f'{angle_max/N_theta*i}°' for i in range(N_theta+1)])
+    plt.xticks(range(N_theta+1), [f'{angle_max/N_theta*i:.1f}°' for i in range(N_theta+1)])
     plt.legend()
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.xlabel('Angle [°]')

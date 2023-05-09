@@ -22,6 +22,7 @@ class Info:
         self.stiff_panto = test['stiff_panto']
         self.friction = test['friction']
         self.clearance = test['clearance']
+        
 
 
 class Test(Info):
@@ -44,6 +45,7 @@ class Test(Info):
         self.stress_field = results['stress_field']
         self.stress_pantos = results['stress_pantos']
         self.campagne = campagne
+        self.support_links=None
 
     def get_number_ms(self) -> int:
         return sum([len(i) for i in self.skipped_cyl])
@@ -64,7 +66,7 @@ class Test(Info):
                          self.test_id/'geo.png').crop((588, 192, 1331, 935))
         mono= rgba.split()[-1]
         mono=np.array(mono)>0.01
-        image = np.asarray(mono)
+        image = mono*1.0
         return image
 
     def export_geo(self, destination=Path('.')) -> None:

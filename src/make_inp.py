@@ -18,6 +18,7 @@ from geometry import rectangle
 from geometry import losange
 from geometry import penrose
 from geometry import r0
+from geometry import triangle
 import time
 import csv
 from constants import *

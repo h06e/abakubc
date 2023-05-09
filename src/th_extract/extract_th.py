@@ -65,6 +65,9 @@ else:
     elif test['sample_name'] == 'r0':
         scale = test['geo_parameters']
         area = (20.0*scale)**2
+    elif test['sample_name'] == 'triangle':
+        width, space =test['geo_parameters']
+        area= 2*space*2*space*tan(pi/6.0)
     else:
         raise ValueError
 

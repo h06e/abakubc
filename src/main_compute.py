@@ -19,7 +19,7 @@ import json
 from math import sqrt, cos, sin, pi
 from constants import *
 import time
-from constants import *
+
 
 
 def get_job_name_PBC_KUBC(test):

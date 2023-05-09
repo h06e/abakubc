@@ -11,6 +11,7 @@ By Robin Valmalette
 - update the constants file if PBC and KUBC are required
 - make KUBC and PBC gen file
 - update operation.py to tell how to compute the porosity
+- update `extract_th.py` :)
 
 Help for geo generation : `session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COORDINATE)`
 
