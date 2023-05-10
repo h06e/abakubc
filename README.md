@@ -16,3 +16,11 @@ By Robin Valmalette
 Help for geo generation : `session.journalOptions.setValues(replayGeometry=COORDINATE, recoverGeometry=COORDINATE)`
 
 Pour le PBC, il est fortement conseillé de suivre exactement les commandes (avec les bounding box etc...) après la génération de la pièce sinon ca ne marche pas. Cela est causé par un phénomène relevant de la sorcellerie et la documentation oublira volontairement ce point.
+
+# Check-list
+
+Dans le slurm:
+- répertoires
+- nom de campagne
+- Mémoire
+- Nombre de task

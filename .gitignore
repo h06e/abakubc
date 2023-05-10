@@ -34,11 +34,13 @@ campagne_mono.slurm
 campagne_honey_CC.csv
 campagne_r0.csv
 
+campagne_vierge/
 campagne_carre/
+campagne_carre_support/
 campagne_mono/
 campagne_honey/
 campagne_honey_CC/
-campagne_honey_UR3/
+campagne_honey_UR3_S13/
 campagne_test/
 porosity/
 sample_bank/
