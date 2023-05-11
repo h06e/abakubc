@@ -3,7 +3,7 @@ from pathlib import Path
 import shutil
 import numpy as np
 import matplotlib.pyplot as plt
-
+import csv
 
 class Info:
     def __init__(self, test) -> None:
@@ -93,6 +93,44 @@ class Test(Info):
                              m_MS[(corner+1) % 4, :5])
         return m
 
+    def get_error(self, eoi:tuple)->float:
+        return self.global_err[eoi[0]][eoi[1]]
+
+    def get_forces(self)->tuple:
+        """ONLY FOR LIN COMPUTATION"""
+        rf=np.zeros((4,10,2,3))
+        root = Path('.').absolute().parent
+        file = np.loadtxt(root/self.campagne/'results' /
+                         self.test_id/'PTBC.csv', delimiter=',')
+        extracted_disp_and_force={
+        'COU':[[]]*(10*4*12),
+        'TBC':[[]]*(10*4*12)
+        }
+        with open(root/self.campagne/'results' /
+                         self.test_id/'COUP.csv', "r") as f:
+            reader = csv.reader(f,delimiter=',')
+            first_line=True
+            line_number=0
+            for row in reader:
+                if first_line:
+                    time_step=[float(i) for i in row]
+                    first_line=False
+                else:
+                    extracted_disp_and_force['COU'][line_number-1]=[float(i) for i in row]
+                line_number+=1
+        with open(root/self.campagne/'results' /
+                         self.test_id/'PTBC.csv', "r") as f:
+            reader = csv.reader(f,delimiter=',')
+            first_line=True
+            line_number=0
+            for row in reader:
+                if first_line:
+                    time_step=[float(i) for i in row]
+                    first_line=False
+                else:
+                    extracted_disp_and_force['TBC'][line_number-1]=[float(i) for i in row]
+                line_number+=1
+        return time_step,extracted_disp_and_force
 
 if __name__ == '__main__':
     pass

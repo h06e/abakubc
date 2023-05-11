@@ -7,8 +7,8 @@ from constants import *
 import os
 
 
-TEST_ID='MONO_1'
-CAMPAGNE_NAME='campagne_1'
+TEST_ID='mono_3D_mesh_2'
+CAMPAGNE_NAME='campagne_mono'
 
 header,campagne=manipulation.read_campagne(CAMPAGNE_NAME)
 root=os.path.abspath(os.getcwd())[:-4]

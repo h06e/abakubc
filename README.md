@@ -22,5 +22,6 @@ Pour le PBC, il est fortement conseillé de suivre exactement les commandes (ave
 Dans le slurm:
 - répertoires
 - nom de campagne
+- --nodelist
 - Mémoire
 - Nombre de task
