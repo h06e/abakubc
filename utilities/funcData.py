@@ -247,7 +247,10 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
     error_per_angle_max = np.nanmax(error_per_angle, axis=(2, 3))
 
     plt.figure(figsize=(12, 4))
-    x = np.linspace(0, N_theta, N_theta+1*loop)-0.5+1/(N_theta)
+    if loop:
+        x = np.linspace(0, N_theta, N_theta+1)-0.5+1/(N_theta)
+    else:
+        x = np.linspace(0, N_theta-1, N_theta)-0.5+0.5/(N_scale)
     col = ['b', 'g', 'r', 'm', 'k', 'c', 'y']
     leg = [f'{i}/10 scale' for i in range(7, 14)]
 
@@ -259,20 +262,23 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
         for i, m in enumerate(error_per_angle_max[:, scale]):
             if m > ymax:
                 plt.text(x[i]+scale/N_scale,
-                        ymax, f'{m:.0f}', ha='center', fontsize=8)
+                        ymax*1.02, f'{m:.0f}', ha='center', fontsize=8)
 
     for i in range(N_theta-1+1*loop):
         plt.axvline(x=i+0.5, color='k', ls='--', lw=1.0)
 
     plt.ylim((0, ymax))
-    plt.xlim((-0.5, N_theta+0.5))
-    plt.xticks(range(N_theta+1), [f'{angle_max/N_theta*i:.1f}°' for i in range(N_theta+1)])
+    plt.xlim((-0.5, N_theta-1+1*loop+0.5))
+    if loop:
+        plt.xticks(range(N_theta+1), [f'{angle_max/N_theta*i:.1f}°' for i in range(N_theta+1)])
+    else:
+        plt.xticks(range(N_theta), [f'{angle_max/(N_theta-1)*i:.1f}°' for i in range(N_theta)])
     plt.legend()
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.xlabel('Angle [°]')
     plt.ylabel(f'Error distribution [%]')
     plt.tight_layout()
-    plt.show()
+    # plt.show()
 
 
 
@@ -327,6 +333,8 @@ def plot_coef_matrix_per_angle(data:dict[Test], data_size:tuple, angle_max:float
 
     xx = np.linspace(0, angle_max, 200)
     K_list = []
+    test=data[ next((k for k in data
+                        if k.split('_')[2] == '0'), None)]
     K_th = test.K_plane_stress_PBC
     for x in xx:
         angle = x*pi/180
