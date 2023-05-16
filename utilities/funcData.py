@@ -318,7 +318,7 @@ def plot_coef_matrix_per_angle(data:dict[Test], data_size:tuple, angle_max:float
     coefs = ((0, 0), (0, 1), (2, 2))
     leg = ('K11', 'K12', 'K33')
     col = ['b', 'r', 'g', 'm']
-    plt.figure()
+    plt.figure(figsize=(5,3))
     x = np.linspace(0, angle_max, N_theta+1)
     for idx, coef in enumerate(coefs):
         plt.errorbar(x-0.25, data_per_angle_mean[:, coef[0], coef[1]], [data_per_angle_mean[:, coef[0], coef[1]]-data_per_angle_q1[:, coef[0], coef[1]], data_per_angle_q2[:, coef[0], coef[1]] - data_per_angle_mean[:, coef[0], coef[1]]],
@@ -345,7 +345,7 @@ def plot_coef_matrix_per_angle(data:dict[Test], data_size:tuple, angle_max:float
         K = np.dot(np.dot(np.transpose(T), K_th), T)
         K_list.append(K)
     K_list = np.array(K_list)
-    sty = [':', '--', ':', '-.']
+    sty = [':', '--', '-.', '-.']
     for idx, coef in enumerate(coefs):
         plt.plot(xx, K_list[:, coef[0], coef[1]],
                 'k'+sty[idx], label=f'PBC {leg[idx]}')
@@ -356,8 +356,6 @@ def plot_coef_matrix_per_angle(data:dict[Test], data_size:tuple, angle_max:float
     plt.ylabel('Stiffness [MPa]')
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
-
-    plt.show()
 
 
 
