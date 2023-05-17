@@ -23,24 +23,33 @@
 *.023
 *.exception
 
+
 !src/ressources/support_2d.sat
 !src/ressources/support.sat
+
 
 test.py
 campagne_honey.csv
 campagne_honey_2.csv
 campagne_mono.csv
 campagne_mono.slurm
+campagne_carre_CC.csv
 campagne_honey_CC.csv
+campagne_*
 campagne_r0.csv
 
 campagne_vierge/
 campagne_carre/
+campagne_carre_UR3_S13/
+campagne_carre_UR3_S7/
+campagne_carre_CC/
 campagne_carre_support/
 campagne_mono/
 campagne_honey/
 campagne_honey_CC/
 campagne_honey_UR3_S13/
+campagne_honey_UR3_S7/
+campagne_hexac/
 campagne_test/
 porosity/
 sample_bank/
