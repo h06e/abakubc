@@ -22,7 +22,7 @@ def write_test(new_campaign_name: str, header: str, test: dict) -> None:
 
 
 # ***************************************************
-new_campaign_name = 'campagne_hexac.csv'
+new_campaign_name = 'campagne_trian.csv'
 
 test = {
     'debug': False,
@@ -159,48 +159,12 @@ test = {
 #                 test['trans_rot'] = f'{tx:.3f},{ty:.3f},{angle}'
 #                 write_test(new_campaign_name, header, test)
 
-# # !##############################################################
-# # ! TRIANGLE
-# test['sample_name'] = 'triangle'
-# L, width = 28.0, 4.0
-# length_x_default_scale = L  # * See PBC gen files
-# length_y_default_scale = 2*L*tan(pi/6)
-# scale_factors = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3]
-# #scale_factors = [1.3]
-
-# nb_of_rotation = 12
-# angle_max = 30.0
-# angles = [angle_max*i/nb_of_rotation for i in range(nb_of_rotation+1)]
-
-# # * nb_of_translation=10 mean a 10 by 10 grid. Giving the periodicity.
-# # * eg 10 lead to 9*5=45 tests per angle of rotation
-# nb_of_translation = 10
-# # ***************************************************
-# init_write_header(new_campaign_name, header)
-
-# for scale in scale_factors:
-#     length_x = length_x_default_scale*scale
-#     length_y = length_y_default_scale*scale
-#     test['geo_parameters'] = f'{L*scale:.3f},{width*scale:.3f}'
-#     test['mesh_size'] = f'{width*scale/5:.3f}'
-#     for ang_i, angle in enumerate(angles):
-#         for i_tx in range(nb_of_translation):
-#             for i_ty in range(nb_of_translation//2 + nb_of_translation % 2):
-#                 # !!!! NOT DOT IN THE NAME
-#                 test['test_id'] = f'tria_{int(scale*10)}_{ang_i}_{i_tx}_{i_ty}' # ~ modifier
-#                 tx = length_x * i_tx/nb_of_translation
-#                 ty = length_y * i_ty/nb_of_translation
-#                 test['trans_rot'] = f'{tx:.3f},{ty:.3f},{angle}'
-#                 write_test(new_campaign_name, header, test)
-
 # !##############################################################
-# ! HEXAC
-test['sample_name'] = 'hexachiral'
-L, width, radius = 28.0,4.0,8.0
+# ! TRIANGLE
+test['sample_name'] = 'triangle'
+L, width = 28.0, 4.0
 length_x_default_scale = L  # * See PBC gen files
-aa = L/2.0/tan(pi/3.0)
-bb = L/2.0*tan(pi/6)
-length_y_default_scale = 2*(aa+2*bb)
+length_y_default_scale = 2*L*tan(pi/6)
 scale_factors = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3]
 #scale_factors = [1.3]
 
@@ -217,14 +181,50 @@ init_write_header(new_campaign_name, header)
 for scale in scale_factors:
     length_x = length_x_default_scale*scale
     length_y = length_y_default_scale*scale
-    test['geo_parameters'] = f'{L*scale:.3f},{width*scale:.3f},{radius*scale:.3f}'
+    test['geo_parameters'] = f'{width*scale:.3f},{L*scale:.3f}'
     test['mesh_size'] = f'{width*scale/5:.3f}'
     for ang_i, angle in enumerate(angles):
         for i_tx in range(nb_of_translation):
             for i_ty in range(nb_of_translation//2 + nb_of_translation % 2):
                 # !!!! NOT DOT IN THE NAME
-                test['test_id'] = f'hexac_{int(scale*10)}_{ang_i}_{i_tx}_{i_ty}' # ~ modifier
+                test['test_id'] = f'tria_{int(scale*10)}_{ang_i}_{i_tx}_{i_ty}' # ~ modifier
                 tx = length_x * i_tx/nb_of_translation
                 ty = length_y * i_ty/nb_of_translation
                 test['trans_rot'] = f'{tx:.3f},{ty:.3f},{angle}'
                 write_test(new_campaign_name, header, test)
+
+# # !##############################################################
+# # ! HEXAC
+# test['sample_name'] = 'hexachiral'
+# L, width, radius = 28.0,4.0,8.0
+# length_x_default_scale = L  # * See PBC gen files
+# aa = L/2.0/tan(pi/3.0)
+# bb = L/2.0*tan(pi/6)
+# length_y_default_scale = 2*(aa+2*bb)
+# scale_factors = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3]
+# #scale_factors = [1.3]
+
+# nb_of_rotation = 12
+# angle_max = 30.0
+# angles = [angle_max*i/nb_of_rotation for i in range(nb_of_rotation+1)]
+
+# # * nb_of_translation=10 mean a 10 by 10 grid. Giving the periodicity.
+# # * eg 10 lead to 9*5=45 tests per angle of rotation
+# nb_of_translation = 10
+# # ***************************************************
+# init_write_header(new_campaign_name, header)
+
+# for scale in scale_factors:
+#     length_x = length_x_default_scale*scale
+#     length_y = length_y_default_scale*scale
+#     test['geo_parameters'] = f'{L*scale:.3f},{width*scale:.3f},{radius*scale:.3f}'
+#     test['mesh_size'] = f'{width*scale/5:.3f}'
+#     for ang_i, angle in enumerate(angles):
+#         for i_tx in range(nb_of_translation):
+#             for i_ty in range(nb_of_translation//2 + nb_of_translation % 2):
+#                 # !!!! NOT DOT IN THE NAME
+#                 test['test_id'] = f'hexac_{int(scale*10)}_{ang_i}_{i_tx}_{i_ty}' # ~ modifier
+#                 tx = length_x * i_tx/nb_of_translation
+#                 ty = length_y * i_ty/nb_of_translation
+#                 test['trans_rot'] = f'{tx:.3f},{ty:.3f},{angle}'
+#                 write_test(new_campaign_name, header, test)
