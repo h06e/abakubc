@@ -51,7 +51,7 @@ tx, ty, theta = test['trans_rot']
 
 # nombre de cellules pour la contstruction avec les arrays (choisir assez grand)
 aa = L/2.0/tan(pi/3.0)
-bb = L/2.0*tan(pi/6)
+bb = L/2.0*tan(pi/6.0)
 Nx = int(400/(L/2.0)/2)
 Ny = int(400/(2*(aa+2*bb)))
 # Construction de la piece

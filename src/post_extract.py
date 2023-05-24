@@ -155,10 +155,12 @@ session.printToFile(
     canvasObjects=(session.viewports['Viewport: 1'], ))
 session.viewports['Viewport: 1'].odbDisplay.display.setValues(plotState=(
     CONTOURS_ON_DEF, ))
-for idx_step, step_name in enumerate(odb.steps.keys()):
-    log(step_name)
 
-    take_3_stress_pic(idx_step, step_name,res_folder)
+# ? Uncomment to take one pic at each step
+# for idx_step, step_name in enumerate(odb.steps.keys()):
+#     log(step_name)
+
+#     take_3_stress_pic(idx_step, step_name,res_folder)
 
 # -----------------------------------------------------------------------------------
 # EXTRACT THE FIELD

@@ -53,7 +53,7 @@ def make_geo_2d(paths, test, skip_cylinders):
     s.setPrimaryObject(option=STANDALONE)
     s.rectangle(point1=(0.0, 0.0), point2=(L/2.0, -width))
     p = mdb.models['Model-1'].Part(name='Part-1', dimensionality=TWO_D_PLANAR,
-                                   type=DEFORMABLE_BODY)
+                                    type=DEFORMABLE_BODY)
     p = mdb.models['Model-1'].parts['Part-1']
     p.BaseShell(sketch=s)
     s.unsetPrimaryObject()
@@ -61,13 +61,13 @@ def make_geo_2d(paths, test, skip_cylinders):
     del mdb.models['Model-1'].sketches['__profile__']
 
     s1 = mdb.models['Model-1'].ConstrainedSketch(name='__profile__',
-                                                 sheetSize=200.0)
+                                                    sheetSize=200.0)
     g, v, d, c = s1.geometry, s1.vertices, s1.dimensions, s1.constraints
     s1.setPrimaryObject(option=STANDALONE)
     s1.CircleByCenterPerimeter(center=(0.0, -radius), point1=(0.0, 0.0))
     s1.CircleByCenterPerimeter(center=(0.0, -radius), point1=(0.0, -width))
     p = mdb.models['Model-1'].Part(name='Part-2', dimensionality=TWO_D_PLANAR,
-                                   type=DEFORMABLE_BODY)
+                                    type=DEFORMABLE_BODY)
     p = mdb.models['Model-1'].parts['Part-2']
     p.BaseShell(sketch=s1)
     s1.unsetPrimaryObject()
@@ -81,26 +81,26 @@ def make_geo_2d(paths, test, skip_cylinders):
     a1.Instance(name='Part-2-1', part=p, dependent=ON)
     a1 = mdb.models['Model-1'].rootAssembly
     a1.InstanceFromBooleanMerge(name='Part-3', instances=(a1.instances['Part-1-1'],
-                                                          a1.instances['Part-2-1'], ), originalInstances=DELETE, domain=GEOMETRY)
+                                                            a1.instances['Part-2-1'], ), originalInstances=DELETE, domain=GEOMETRY)
     a1 = mdb.models['Model-1'].rootAssembly
     a1.translate(instanceList=('Part-3-1', ), vector=(0.0, radius, 0.0))
     a1.RadialInstancePattern(instanceList=('Part-3-1', ), point=(0.0, 0.0, 0.0),
-                             axis=(0.0, 0.0, 1.0), number=6, totalAngle=360.0)
+                                axis=(0.0, 0.0, 1.0), number=6, totalAngle=360.0)
     a1.InstanceFromBooleanMerge(name='Part-4', instances=(a1.instances['Part-3-1'],
-                                                          a1.instances['Part-3-1-rad-2'], a1.instances['Part-3-1-rad-3'],
-                                                          a1.instances['Part-3-1-rad-4'], a1.instances['Part-3-1-rad-5'],
-                                                          a1.instances['Part-3-1-rad-6'], ), originalInstances=DELETE,
+                                                            a1.instances['Part-3-1-rad-2'], a1.instances['Part-3-1-rad-3'],
+                                                            a1.instances['Part-3-1-rad-4'], a1.instances['Part-3-1-rad-5'],
+                                                            a1.instances['Part-3-1-rad-6'], ), originalInstances=DELETE,
                                 domain=GEOMETRY)
+    a1.rotate(instanceList=('Part-4-1', ), axisPoint=(0.0, 0.0, 0.0),
+                axisDirection=(0.0, 0.0, 1.0), angle=-180/pi*asin((radius-width/2)/(L/2.0)))
     mdb.models['Model-1'].rootAssembly.translate(
         instanceList=('Part-4-1',), vector=(288.0/2, 288.0/2, 0.0))
-    a1.rotate(instanceList=('Part-4-1', ), axisPoint=(0.0, 0.0, 0.0),
-              axisDirection=(0.0, 0.0, 1.0), angle=-180/pi*asin((radius-width/2)/(L/2.0)))
     # Arrays
     print("Array...")
     a1 = mdb.models['Model-1'].rootAssembly
     a1.LinearInstancePattern(instanceList=('Part-4-1', ), direction1=(1.0, 0.0,
-                                                                      0.0), direction2=(0.0, 1.0, 0.0), number1=Nx, number2=1, spacing1=L,
-                             spacing2=77.1075)
+                                                                        0.0), direction2=(0.0, 1.0, 0.0), number1=Nx, number2=1, spacing1=L,
+                                spacing2=77.1075)
     merge('Part-4', 'cell-5', DELETE)
     p = mdb.models['Model-1'].parts['cell-5']
     a1.Instance(name='cell-5-2', part=p, dependent=ON)
@@ -109,22 +109,21 @@ def make_geo_2d(paths, test, skip_cylinders):
         instanceList=('cell-5-2',), vector=(L/2.0, aa+2*bb, 0.0))
     merge('cell-5', 'cell-6', DELETE)
     mdb.models['Model-1'].rootAssembly.LinearInstancePattern(direction1=(1.0, 0.0,
-                                                                         0.0), direction2=(0.0, 1.0, 0.0), instanceList=('cell-6-1', ), number1=1,
-                                                             number2=Ny, spacing1=L/2.0, spacing2=2*(aa+2*bb))
+                                                                            0.0), direction2=(0.0, 1.0, 0.0), instanceList=('cell-6-1', ), number1=1,
+                                                                number2=Ny, spacing1=L/2.0, spacing2=2*(aa+2*bb))
     merge('cell-6', 'cell-7', DELETE)
     a1.LinearInstancePattern(instanceList=('cell-7-1', ), direction1=(-1.0, 0.0,
-                                                                      0.0), direction2=(0.0, -1.0, 0.0), number1=2, number2=2, spacing1=L*Nx,
-                             spacing2=Ny*2*(aa+2*bb))
+                                                                        0.0), direction2=(0.0, -1.0, 0.0), number1=2, number2=2, spacing1=L*Nx,
+                                spacing2=Ny*2*(aa+2*bb))
     merge('cell-7', 'cell_infini-1', DELETE)
     mdb.models['Model-1'].rootAssembly.features.changeKey(
         fromName='cell_infini-1-1', toName='cell_infini-1')
     # Rotation et translation finale
-    mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0,
-                                                                          1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('cell_infini-1', ))
     mdb.models['Model-1'].rootAssembly.translate(
         instanceList=('cell_infini-1',), vector=(tx, ty, 0.0))
+    mdb.models['Model-1'].rootAssembly.rotate(angle=theta, axisDirection=(0.0, 0.0,
+                                                                            1.0), axisPoint=(144.0, 144.0, 0.0), instanceList=('cell_infini-1', ))
 
-    # ----------------------------------------------------------------------------------------
     # First cut
     print("First cut...")
     s = mdb.models['Model-1'].ConstrainedSketch(
@@ -134,7 +133,7 @@ def make_geo_2d(paths, test, skip_cylinders):
     s.rectangle(point1=(0.0, 0.0), point2=(288.0, 288.0))
     s.rectangle(point1=(-1000, -1000), point2=(288.0+1000, 288.0+1000))
     p = mdb.models['Model-1'].Part(name='cutter_1', dimensionality=TWO_D_PLANAR,
-                                   type=DEFORMABLE_BODY)
+                                    type=DEFORMABLE_BODY)
     p = mdb.models['Model-1'].parts['cutter_1']
     p.BaseShell(sketch=s)
     s.unsetPrimaryObject()
@@ -145,9 +144,9 @@ def make_geo_2d(paths, test, skip_cylinders):
         dependent=ON, name='cutter_1-1', part=mdb.models['Model-1'].parts['cutter_1'])
     a1 = mdb.models['Model-1'].rootAssembly
     a1.InstanceFromBooleanCut(name='cell_square',
-                              instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['cell_infini-1'],
-                              cuttingInstances=(a1.instances['cutter_1-1'], ),
-                              originalInstances=DELETE)
+                                instanceToBeCut=mdb.models['Model-1'].rootAssembly.instances['cell_infini-1'],
+                                cuttingInstances=(a1.instances['cutter_1-1'], ),
+                                originalInstances=DELETE)
 
     # Second cut
     print("Second cut...")
