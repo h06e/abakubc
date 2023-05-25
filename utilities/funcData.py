@@ -226,7 +226,7 @@ def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str=''):
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
 
-def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:float, ymax:float, loop=False) -> None:
+def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:float, ymax:float, error:str, loop=False) -> None:
     """N_theta, N_scale, N_tx, N_ty = data_size"""
     N_theta, N_scale, N_tx, N_ty = data_size
   
@@ -251,14 +251,14 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
         x = np.linspace(0, N_theta, N_theta+1)-0.5+1/(N_theta)
     else:
         x = np.linspace(0, N_theta-1, N_theta)-0.5+0.5/(N_scale)
-    col = ['b', 'g', 'r', 'm', 'k', 'c', 'y']
-    leg = [f'{i}/10 scale' for i in range(7, 14)]
+    col = ['0.2', '0.3', '0.4', 'r', '0.6', '0.7', '0.8']
+    leg = [f'{i}:10' for i in range(7, 14)]
 
     for scale in range(N_scale):
         plt.errorbar(x+scale/N_scale, error_per_angle_mean[:, scale], [error_per_angle_mean[:, scale]-error_per_angle_q1[:, scale], error_per_angle_q2[:, scale] - error_per_angle_mean[:, scale]],
-                    fmt=col[scale]+'_', lw=3, ms=1, label=f'{leg[scale]}')
+                    fmt='_',mec='0.0',ecolor=col[scale], lw=3, ms=1, label=f'{leg[scale]}')
         plt.errorbar(x+scale/N_scale, error_per_angle_mean[:, scale], [error_per_angle_mean[:, scale]-error_per_angle_min[:, scale], error_per_angle_max[:, scale] - error_per_angle_mean[:, scale]],
-                    fmt='_'+col[scale], ecolor=col[scale], lw=1, capsize=2)
+                    fmt='_',mec='0.0', ecolor=col[scale], lw=1, capsize=2)
         for i, m in enumerate(error_per_angle_max[:, scale]):
             if m > ymax:
                 plt.text(x[i]+scale/N_scale,
@@ -270,13 +270,13 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
     plt.ylim((0, ymax))
     plt.xlim((-0.5, N_theta-1+1*loop+0.5))
     if loop:
-        plt.xticks(range(N_theta+1), [f'{angle_max/N_theta*i:.1f}°' for i in range(N_theta+1)])
+        plt.xticks(range(N_theta+1), [f'{angle_max/N_theta*i:.1f}' for i in range(N_theta+1)])
     else:
-        plt.xticks(range(N_theta), [f'{angle_max/(N_theta-1)*i:.1f}°' for i in range(N_theta)])
+        plt.xticks(range(N_theta), [f'{angle_max/(N_theta-1)*i:.1f}' for i in range(N_theta)])
     plt.legend()
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(title='Scales:',loc='center left', bbox_to_anchor=(1, 0.5))
     plt.xlabel('Angle [°]')
-    plt.ylabel(f'Error distribution [%]')
+    plt.ylabel(error+r' distribution [%]')
     plt.tight_layout()
     # plt.show()
 
