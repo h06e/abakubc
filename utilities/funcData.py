@@ -240,7 +240,7 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
             error_per_angle[-1, scale-7, idx,
                             idy] = test.global_err[eoi[0]][eoi[1]]
 
-    error_per_angle_mean = np.nanmean(error_per_angle, axis=(2, 3))
+    error_per_angle_median = np.nanquantile(error_per_angle, 0.5, axis=(2, 3))
     error_per_angle_q1 = np.nanquantile(error_per_angle, 0.25, axis=(2, 3))
     error_per_angle_q2 = np.nanquantile(error_per_angle, 0.75, axis=(2, 3))
     error_per_angle_min = np.nanmin(error_per_angle, axis=(2, 3))
@@ -255,9 +255,9 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
     leg = [f'{i}:10' for i in range(7, 14)]
 
     for scale in range(N_scale):
-        plt.errorbar(x+scale/N_scale, error_per_angle_mean[:, scale], [error_per_angle_mean[:, scale]-error_per_angle_q1[:, scale], error_per_angle_q2[:, scale] - error_per_angle_mean[:, scale]],
+        plt.errorbar(x+scale/N_scale, error_per_angle_median[:, scale], [error_per_angle_median[:, scale]-error_per_angle_q1[:, scale], error_per_angle_q2[:, scale] - error_per_angle_median[:, scale]],
                     fmt='_',mec='0.0',ecolor=col[scale], lw=3, ms=1, label=f'{leg[scale]}')
-        plt.errorbar(x+scale/N_scale, error_per_angle_mean[:, scale], [error_per_angle_mean[:, scale]-error_per_angle_min[:, scale], error_per_angle_max[:, scale] - error_per_angle_mean[:, scale]],
+        plt.errorbar(x+scale/N_scale, error_per_angle_median[:, scale], [error_per_angle_median[:, scale]-error_per_angle_min[:, scale], error_per_angle_max[:, scale] - error_per_angle_median[:, scale]],
                     fmt='_',mec='0.0', ecolor=col[scale], lw=1, capsize=2)
         for i, m in enumerate(error_per_angle_max[:, scale]):
             if m > ymax:

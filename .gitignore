@@ -56,6 +56,8 @@ sample_bank/
 theory_matix_bank/
 theory_matrix_bank/
 tmp/
+KUBC_support_analysis/
+KUBC_support_analysis.zip
 
 src/func/__pycache__/
 src/__pycache__/
