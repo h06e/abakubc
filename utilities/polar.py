@@ -43,8 +43,8 @@ def plot_K (K_0,coeff, theory=False):
 
 
 
-test_name='Z_test_chaine_1'
-campagne_name='campagne_test'
+test_name='hexac_13_6_5_0'
+campagne_name='campagne_hexac'
 with open(f'{campagne_name}/results/{test_name}/final_data.json') as f:
     data = json.load(f)
 

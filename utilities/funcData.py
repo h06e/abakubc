@@ -187,7 +187,7 @@ def plot_box(X, Y):
                  fmt='b_', ecolor='b', lw=1, capsize=2)
     plt.plot(X_bulk, y_mean, 'b:')
 
-def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str=''):
+def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str='',ylim=None):
     X_sorted, Y_sorted = (list(t) for t in zip(*sorted(zip(X, Y))))
     old = X_sorted[0]
     X_bulk, Y_bulk, number_per_x= [old], [[]], []
@@ -213,13 +213,15 @@ def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str=''):
     plt.plot(X_bulk, y_mean, 'b:')
     plt.xlabel(ylabel)
     plt.ylabel('erreur')
+    if ylim:
+        plt.ylim(ylim)
     ax2=plt.twinx()
     ax2.set_ylim(bottom=0, top=1.2*np.max(number_per_x))
     ax2.plot(X_bulk, number_per_x, 'ro')
     ax2.set_ylabel('Number per case', color='r')
     ax2.tick_params(axis='y', colors='red')
     plt.tight_layout()
-    plt.show()
+
 
 
 
