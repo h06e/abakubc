@@ -38,6 +38,12 @@ campagne_honey_CC.csv
 campagne_*
 campagne_r0.csv
 
+!database/campagne_*
+*/
+!src/
+!utilities/
+!database/
+
 campagne_vierge/
 campagne_carre/
 campagne_carre_UR3_S13/

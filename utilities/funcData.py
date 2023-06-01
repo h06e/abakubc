@@ -6,6 +6,7 @@ import csv
 import matplotlib.pyplot as plt
 from math import *
 
+
 def read_campagne(file_name) -> tuple[list, list[dict]]:
     ROOT = Path('.').absolute().parent
     tests = {}
@@ -38,6 +39,22 @@ def read_data_from_campaigns(campagnes: list) -> dict[dict[Test]]:
     print(f'Lecture des données réalisée en {t_end-t_start :.5f}s')
     return data
 
+def read_data_from_database(campagnes: list) -> dict[dict[Test]]:
+    """Same as read_data_from_campaigns but using a full database file (no pic)"""
+    ROOT = Path('.').absolute().parent
+    data={}
+    t_start = perf_counter()
+    for campagne in campagnes:
+        data[campagne]={}
+        with open(ROOT/'database'/f'{campagne}.json', 'r') as f:
+            data_from_file = json.load(f)
+        for test_id,test in data_from_file.items():
+            if type(test)==str:
+                continue # It is the date info
+            data[campagne][test_id] = Test(test, test, campagne)
+    t_end = perf_counter()
+    print(f'Lecture des données réalisée en {t_end-t_start :.5f}s')
+    return data
 
 def get_bulk_data(data: dict[dict[Test]]) -> dict[str, Test]:
     """Allow to get bulk data (suppress the campagne name stage)"""
@@ -47,22 +64,23 @@ def get_bulk_data(data: dict[dict[Test]]) -> dict[str, Test]:
     return data_bulk
 
 
-def get_best_test(dict_of_tests: dict[Test], eoi: tuple = (0, 3), number:int=1) -> tuple[str, Test]:
-    dic={}
-    for _,test in dict_of_tests.items():
-        dic |= {test:test.global_err[eoi[0]][eoi[1]]}
-    s={k:v for k,v in sorted(dic.items(), key=lambda item: item[1])}
-    final=[]
+def get_best_test(dict_of_tests: dict[Test], eoi: tuple = (0, 3), number: int = 1) -> tuple[str, Test]:
+    dic = {}
+    for _, test in dict_of_tests.items():
+        dic |= {test: test.global_err[eoi[0]][eoi[1]]}
+    s = {k: v for k, v in sorted(dic.items(), key=lambda item: item[1])}
+    final = []
     for t in s:
         final.append(t)
     return final[:number]
 
-def get_worse_test(dict_of_tests: dict[Test], eoi: tuple = (0, 3), number:int=1) -> tuple[str, Test]:
-    dic={}
-    for _,test in dict_of_tests.items():
-        dic |= {test:test.global_err[eoi[0]][eoi[1]]}
-    s={k:v for k,v in sorted(dic.items(), key=lambda item: item[1])}
-    final=[]
+
+def get_worse_test(dict_of_tests: dict[Test], eoi: tuple = (0, 3), number: int = 1) -> tuple[str, Test]:
+    dic = {}
+    for _, test in dict_of_tests.items():
+        dic |= {test: test.global_err[eoi[0]][eoi[1]]}
+    s = {k: v for k, v in sorted(dic.items(), key=lambda item: item[1])}
+    final = []
     for t in s:
         final.append(t)
     final.reverse()
@@ -136,14 +154,14 @@ def get_max_MS_consecutive(test: Test) -> float:
 def get_barycentre(test: Test, full_vect=False) -> float:
     skip_cyl = test.skipped_cyl
     barycentre = np.array([0.0, 0.0])
-    for i_c,cote in enumerate(skip_cyl):
+    for i_c, cote in enumerate(skip_cyl):
         for cyl in cote:
             barycentre = barycentre+get_vect_of_support(i_c, cyl)
-    r=(barycentre[0]**2 + barycentre[1]**2)**0.5
-    theta=atan(barycentre[1]/barycentre[0])
+    r = (barycentre[0]**2 + barycentre[1]**2)**0.5
+    theta = atan(barycentre[1]/barycentre[0])
     if full_vect:
-        return barycentre,r
-    if r!=0.0 and test.get_number_ms()!=0:
+        return barycentre, r
+    if r != 0.0 and test.get_number_ms() != 0:
         return r
     else:
         return None
@@ -187,35 +205,36 @@ def plot_box(X, Y):
                  fmt='b_', ecolor='b', lw=1, capsize=2)
     plt.plot(X_bulk, y_mean, 'b:')
 
-def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str='',ylim=None):
+
+def plot_box2(X, Y, step: float = 0.01, width: float = 0.2, ylabel: str = '', ylim=None):
     X_sorted, Y_sorted = (list(t) for t in zip(*sorted(zip(X, Y))))
     old = X_sorted[0]
-    X_bulk, Y_bulk, number_per_x= [old], [[]], []
-    counter=0
+    X_bulk, Y_bulk, number_per_x = [old], [[]], []
+    counter = 0
     for x, y in zip(X_sorted, Y_sorted):
-        if x<old+step:
+        if x < old+step:
             Y_bulk[-1].append(y)
-            counter+=1
+            counter += 1
             continue
         number_per_x.append(counter)
         X_bulk.append(x)
         Y_bulk.append([y])
         old = x
-        counter=0
+        counter = 0
     number_per_x.append(counter)
     y_mean = []
     for y in Y_bulk:
         y_mean.append(np.mean(np.array(y)))
     y_mean = np.array(y_mean)
     plt.figure()
-    plt.violinplot(Y_bulk, X_bulk,widths=width,
+    plt.violinplot(Y_bulk, X_bulk, widths=width,
                    showmeans=False, showmedians=False, showextrema=True)
     plt.plot(X_bulk, y_mean, 'b:')
     plt.xlabel(ylabel)
     plt.ylabel('erreur')
     if ylim:
         plt.ylim(ylim)
-    ax2=plt.twinx()
+    ax2 = plt.twinx()
     ax2.set_ylim(bottom=0, top=1.2*np.max(number_per_x))
     ax2.plot(X_bulk, number_per_x, 'ro')
     ax2.set_ylabel('Number per case', color='r')
@@ -223,15 +242,13 @@ def plot_box2(X, Y, step:float=0.01, width:float=0.2, ylabel:str='',ylim=None):
     plt.tight_layout()
 
 
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-
-
-def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:float, ymax:float, error:str, loop=False) -> None:
+def plot_map_theta_size(data: dict[Test], data_size: tuple, eoi: tuple, angle_max: float, ymax: float, error: str, loop=False) -> None:
     """N_theta, N_scale, N_tx, N_ty = data_size"""
     N_theta, N_scale, N_tx, N_ty = data_size
-  
+
     error_per_angle = np.empty((N_theta+1*loop, N_scale, N_tx, N_ty))
     error_per_angle[:] = np.nan
     for test_id, test in data.items():
@@ -258,13 +275,13 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
 
     for scale in range(N_scale):
         plt.errorbar(x+scale/N_scale, error_per_angle_median[:, scale], [error_per_angle_median[:, scale]-error_per_angle_q1[:, scale], error_per_angle_q2[:, scale] - error_per_angle_median[:, scale]],
-                    fmt='_',mec='0.0',ecolor=col[scale], lw=3, ms=1, label=f'{leg[scale]}')
+                     fmt='_', mec='0.0', ecolor=col[scale], lw=3, ms=1, label=f'{leg[scale]}')
         plt.errorbar(x+scale/N_scale, error_per_angle_median[:, scale], [error_per_angle_median[:, scale]-error_per_angle_min[:, scale], error_per_angle_max[:, scale] - error_per_angle_median[:, scale]],
-                    fmt='_',mec='0.0', ecolor=col[scale], lw=1, capsize=2)
+                     fmt='_', mec='0.0', ecolor=col[scale], lw=1, capsize=2)
         for i, m in enumerate(error_per_angle_max[:, scale]):
             if m > ymax:
                 plt.text(x[i]+scale/N_scale,
-                        ymax*1.02, f'{m:.0f}', ha='center', fontsize=8)
+                         ymax*1.02, f'{m:.0f}', ha='center', fontsize=8)
 
     for i in range(N_theta-1+1*loop):
         plt.axvline(x=i+0.5, color='k', ls='--', lw=1.0)
@@ -272,37 +289,39 @@ def plot_map_theta_size(data:dict[Test],data_size:tuple, eoi:tuple, angle_max:fl
     plt.ylim((0, ymax))
     plt.xlim((-0.5, N_theta-1+1*loop+0.5))
     if loop:
-        plt.xticks(range(N_theta+1), [f'{angle_max/N_theta*i:.1f}' for i in range(N_theta+1)])
+        plt.xticks(range(N_theta+1),
+                   [f'{angle_max/N_theta*i:.1f}' for i in range(N_theta+1)])
     else:
-        plt.xticks(range(N_theta), [f'{angle_max/(N_theta-1)*i:.1f}' for i in range(N_theta)])
+        plt.xticks(range(N_theta), [
+                   f'{angle_max/(N_theta-1)*i:.1f}' for i in range(N_theta)])
     plt.legend()
-    plt.legend(title='Scales:',loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(title='Scales:', loc='center left', bbox_to_anchor=(1, 0.5))
     plt.xlabel('Angle [°]')
     plt.ylabel(error+r' distribution [%]')
     plt.tight_layout()
     # plt.show()
 
 
-
-
-def plot_coef_matrix_per_angle(data:dict[Test], data_size:tuple, angle_max:float)-> None:
+def plot_coef_matrix_per_angle(data: dict[Test], data_size: tuple, angle_max: float) -> None:
     N_theta, N_scale, N_tx, N_ty = data_size
 
-    data_per_angle = np.empty((N_theta+1, N_tx, N_ty, 3, 3)) # 3x3 stiffness matrix
+    data_per_angle = np.empty(
+        (N_theta+1, N_tx, N_ty, 3, 3))  # 3x3 stiffness matrix
     data_per_angle[:] = np.nan
-    data_per_angle_KUBC = np.empty((N_theta+1, N_tx, N_ty, 3, 3)) # 3x3 stiffness matrix
+    data_per_angle_KUBC = np.empty(
+        (N_theta+1, N_tx, N_ty, 3, 3))  # 3x3 stiffness matrix
     data_per_angle_KUBC[:] = np.nan
     for test_id, test in data.items():
         _, angle, idx, idy = tuple(map(int, test_id.split('_')[1:]))
         data_per_angle[angle, idx,
-                    idy, :, :] = np.array(test.K_panto_dic)
+                       idy, :, :] = np.array(test.K_panto_dic)
         data_per_angle_KUBC[angle, idx,
-                    idy, :, :] = np.array(test.K_plane_stress_KUBC)
+                            idy, :, :] = np.array(test.K_plane_stress_KUBC)
         if angle == 0:  # Periodicite à 30°
             data_per_angle[-1, idx,
-                        idy, :, :] = np.array(test.K_panto_dic)
+                           idy, :, :] = np.array(test.K_panto_dic)
             data_per_angle_KUBC[-1, idx,
-                        idy, :, :] = np.array(test.K_plane_stress_KUBC)
+                                idy, :, :] = np.array(test.K_plane_stress_KUBC)
 
     data_per_angle_mean = np.nanmean(data_per_angle, axis=(1, 2))
     data_per_angle_q1 = np.nanquantile(data_per_angle, 0.25, axis=(1, 2))
@@ -311,46 +330,47 @@ def plot_coef_matrix_per_angle(data:dict[Test], data_size:tuple, angle_max:float
     data_per_angle_max = np.nanmax(data_per_angle, axis=(1, 2))
 
     data_per_angle_KUBC_mean = np.nanmean(data_per_angle_KUBC, axis=(1, 2))
-    data_per_angle_KUBC_q1 = np.nanquantile(data_per_angle_KUBC, 0.25, axis=(1, 2))
-    data_per_angle_KUBC_q2 = np.nanquantile(data_per_angle_KUBC, 0.75, axis=(1, 2))
+    data_per_angle_KUBC_q1 = np.nanquantile(
+        data_per_angle_KUBC, 0.25, axis=(1, 2))
+    data_per_angle_KUBC_q2 = np.nanquantile(
+        data_per_angle_KUBC, 0.75, axis=(1, 2))
     data_per_angle_KUBC_min = np.nanmin(data_per_angle_KUBC, axis=(1, 2))
     data_per_angle_KUBC_max = np.nanmax(data_per_angle_KUBC, axis=(1, 2))
-
 
     coefs = ((0, 0), (0, 1), (2, 2))
     leg = ('K11', 'K12', 'K33')
     col = ['b', 'r', 'g', 'm']
-    plt.figure(figsize=(5,3))
+    plt.figure(figsize=(5, 3))
     x = np.linspace(0, angle_max, N_theta+1)
     for idx, coef in enumerate(coefs):
         plt.errorbar(x-0.25, data_per_angle_mean[:, coef[0], coef[1]], [data_per_angle_mean[:, coef[0], coef[1]]-data_per_angle_q1[:, coef[0], coef[1]], data_per_angle_q2[:, coef[0], coef[1]] - data_per_angle_mean[:, coef[0], coef[1]]],
-                    fmt=col[idx]+'_', lw=3, ms=1, label=f'{leg[idx]}')
+                     fmt=col[idx]+'_', lw=3, ms=1, label=f'{leg[idx]}')
         plt.errorbar(x-0.25, data_per_angle_mean[:, coef[0], coef[1]], [data_per_angle_mean[:, coef[0], coef[1]]-data_per_angle_min[:, coef[0], coef[1]], data_per_angle_max[:, coef[0], coef[1]] - data_per_angle_mean[:, coef[0], coef[1]]],
-                    fmt=col[idx]+'_', ecolor=col[idx], lw=1, capsize=2)
-        
+                     fmt=col[idx]+'_', ecolor=col[idx], lw=1, capsize=2)
+
         plt.errorbar(x+0.25, data_per_angle_KUBC_mean[:, coef[0], coef[1]], [data_per_angle_KUBC_mean[:, coef[0], coef[1]]-data_per_angle_KUBC_q1[:, coef[0], coef[1]], data_per_angle_KUBC_q2[:, coef[0], coef[1]] - data_per_angle_KUBC_mean[:, coef[0], coef[1]]],
-                    fmt='k_', lw=3, ms=1, label=f'{leg[idx]} KUBC')
+                     fmt='k_', lw=3, ms=1, label=f'{leg[idx]} KUBC')
         plt.errorbar(x+0.25, data_per_angle_KUBC_mean[:, coef[0], coef[1]], [data_per_angle_KUBC_mean[:, coef[0], coef[1]]-data_per_angle_KUBC_min[:, coef[0], coef[1]], data_per_angle_KUBC_max[:, coef[0], coef[1]] - data_per_angle_KUBC_mean[:, coef[0], coef[1]]],
-                    fmt='k_', ecolor='k', lw=1, capsize=2)
+                     fmt='k_', ecolor='k', lw=1, capsize=2)
 
     xx = np.linspace(0, angle_max, 200)
     K_list = []
-    test=data[ next((k for k in data
-                        if k.split('_')[2] == '0'), None)]
+    test = data[next((k for k in data
+                      if k.split('_')[2] == '0'), None)]
     K_th = test.K_plane_stress_PBC
     for x in xx:
         angle = x*pi/180
         c, s = cos(angle), sin(angle)
         T = np.array([[c**2, s**2, c*s],
-                    [s**2, c**2, -c*s],
-                    [-2*s*c, 2*c*s, (c**2-s**2)]])
+                      [s**2, c**2, -c*s],
+                      [-2*s*c, 2*c*s, (c**2-s**2)]])
         K = np.dot(np.dot(np.transpose(T), K_th), T)
         K_list.append(K)
     K_list = np.array(K_list)
     sty = [':', '--', '-.', '-.']
     for idx, coef in enumerate(coefs):
         plt.plot(xx, K_list[:, coef[0], coef[1]],
-                'k'+sty[idx], label=f'PBC {leg[idx]}')
+                 'k'+sty[idx], label=f'PBC {leg[idx]}')
 
     plt.grid()
     plt.legend()
@@ -360,9 +380,37 @@ def plot_coef_matrix_per_angle(data:dict[Test], data_size:tuple, angle_max:float
     plt.tight_layout()
 
 
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+def norme(k):
+    return sqrt(np.sum(k**2))
+
+
+def rot_voigt(k, angle):
+    c, s = cos(angle), sin(angle)
+    T = np.array([[c**2, s**2, c*s],
+                  [s**2, c**2, -c*s],
+                  [-2*s*c, 2*c*s, (c**2-s**2)]])
+    return np.dot(np.dot(np.transpose(T), k), T)
+
+
+def rot_kelvin(k, angle):
+    c, s = cos(angle), sin(angle)
+    T = np.array([[c**2, s**2, sqrt(2)*c*s],
+                  [s**2, c**2, -sqrt(2)*c*s],
+                  [-sqrt(2)*s*c, sqrt(2)*c*s, (c**2-s**2)]])
+    return np.dot(np.dot(np.transpose(T), k), T)
+
+
+def voigt2kelvin(k):
+    a = np.array([[1, 1, sqrt(2)],
+                  [1, 1, sqrt(2)],
+                  [sqrt(2), sqrt(2), 2]])
+    return a*k
+
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 
 if __name__ == '__main__':
     data = read_data_from_campaigns(['campagne_test'])

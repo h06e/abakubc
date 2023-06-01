@@ -41,10 +41,11 @@ def plot_K (K_0,coeff, theory=False):
     plt.grid(True)
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
+    return K_list
 
 
-test_name='hexac_13_6_5_0'
-campagne_name='campagne_hexac'
+test_name='carre_13_0_5_0'
+campagne_name='campagne_carre'
 with open(f'{campagne_name}/results/{test_name}/final_data.json') as f:
     data = json.load(f)
 
@@ -53,9 +54,31 @@ K_1 = np.array(data['K_panto_dic'])
 K_2 = np.array(data['K_plane_stress_PBC'])
 
 plt.subplots(subplot_kw={'projection': 'polar'})
-plot_K(K_1, ((0,0),(1,1), (0,1), (2,2)) )
+K_list=plot_K(K_1, ((0,0),(1,1), (0,1), (2,2)) )
 plot_K(K_2, ((0,0),(1,1), (0,1), (2,2)), True )
+plt.draw()
+
+def compute_frobenius(k):
+    k=np.array(k)
+    return sqrt(np.sum(k**2))
+
+
+fro_list=[]
+print(K_list[0])
+for k in K_list:
+    k=np.array(k)
+    c=np.linalg.inv(k)
+    fro_list.append(sqrt(np.sum(c**2)))
+
+
+plt.figure()
+y=fro_list
+x= np.linspace(0,2*pi,len(y))
+plt.plot(x,y)
 plt.show()
+
+a=np.array([[1,2,3],[4,5,6],[7,8,9]])
+print(np.sum(a**2))
 exit()
 # # * Cf equation 2 de vannucci terme avec R0
 # res_Re = K_list[:, 0, 0]-2*K_list[:, 1, 0]-4*K_list[:, 2, 2]+K_list[:, 1, 1]

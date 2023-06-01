@@ -4,30 +4,27 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
-
-class Info:
-    def __init__(self, test) -> None:
-        self.test_id = test['test_id']
-        self.sample_name = test['sample_name']
-        self.dim = test['dim']
-        self.geo_parameters = test['geo_parameters']
-        self.mesh_size = test['mesh_size']
-        self.thickness = test['thickness']
-        self.trans_rot = test['trans_rot']
-        self.corner_cleaner = test['corner_cleaner']
-        self.mat = test['mat']
-        self.free_rotation = test['free_rotation']
-        self.free_u3 = test['free_u3']
-        self.perfect_panto = test['perfect_panto']
-        self.stiff_panto = test['stiff_panto']
-        self.friction = test['friction']
-        self.clearance = test['clearance']
-        
+from math import *
 
 
-class Test(Info):
+class Test():
     def __init__(self, test_parameters: dict, results: dict, campagne: str) -> None:
-        super().__init__(test_parameters)
+        self.test_id = test_parameters['test_id']
+        self.sample_name = test_parameters['sample_name']
+        self.dim = test_parameters['dim']
+        self.geo_parameters = test_parameters['geo_parameters']
+        self.mesh_size = test_parameters['mesh_size']
+        self.thickness = test_parameters['thickness']
+        self.trans_rot = test_parameters['trans_rot']
+        self.corner_cleaner = test_parameters['corner_cleaner']
+        self.mat = test_parameters['mat']
+        self.free_rotation = test_parameters['free_rotation']
+        self.free_u3 = test_parameters['free_u3']
+        self.perfect_panto = test_parameters['perfect_panto']
+        self.stiff_panto = test_parameters['stiff_panto']
+        self.friction = test_parameters['friction']
+        self.clearance = test_parameters['clearance']
+
         self.K_field_bc = results['K_field_bc']
         self.K_field_dic = results['K_field_dic']
         self.K_panto_bc = results['K_panto_bc']
@@ -45,7 +42,42 @@ class Test(Info):
         self.stress_field = results['stress_field']
         self.stress_pantos = results['stress_pantos']
         self.campagne = campagne
-        self.support_links=None
+        self.support_links = None
+
+    def get_exportable_dict(self):
+        all_dict = {
+            'test_id': self.test_id,
+            'sample_name': self.sample_name,
+            'dim': self.dim,
+            'geo_parameters': self.geo_parameters,
+            'mesh_size': self.mesh_size,
+            'thickness': self.thickness,
+            'trans_rot': self.trans_rot,
+            'corner_cleaner': self.corner_cleaner,
+            'mat': self.mat,
+            'free_rotation': self.free_rotation,
+            'free_u3': self.free_u3,
+            'perfect_panto': self.perfect_panto,
+            'stiff_panto': self.stiff_panto,
+            'friction': self.friction,
+            'clearance': self.clearance,
+            'K_field_bc': self.K_field_bc,
+            'K_field_dic': self.K_field_dic,
+            'K_panto_bc': self.K_panto_bc,
+            'K_panto_dic': self.K_panto_dic,
+            'K_plane_stress_KUBC': self.K_plane_stress_KUBC,
+            'K_plane_stress_PBC': self.K_plane_stress_PBC,
+            'K_plane_stress': self.K_plane_stress,
+            'global_err': self.global_err,
+            'skipped_cyl': self.skipped_cyl,
+            'strain_field': self.strain_field,
+            'strain_th': self.strain_th,
+            'stress_field': self.stress_field,
+            'stress_pantos': self.stress_pantos,
+            'campagne': self.campagne,
+            'support_links': self.support_links
+        }
+        return all_dict
 
     def get_number_ms(self) -> int:
         return sum([len(i) for i in self.skipped_cyl])
@@ -53,19 +85,19 @@ class Test(Info):
     def show_geo(self) -> None:
         root = Path('.').absolute().parent
         rgba = Image.open(root/self.campagne/'results' /
-                         self.test_id/'geo.png').crop((588, 192, 1331, 935))
-        mono= rgba.split()[-1]
-        mono=np.array(mono)>0.01
+                          self.test_id/'geo.png').crop((588, 192, 1331, 935))
+        mono = rgba.split()[-1]
+        mono = np.array(mono) > 0.01
         image = np.asarray(mono)
         plt.imshow(image, cmap='Greys')
         plt.show()
-    
+
     def get_geo(self) -> np.ndarray:
         root = Path('.').absolute().parent
         rgba = Image.open(root/self.campagne/'results' /
-                         self.test_id/'geo.png').crop((588, 192, 1331, 935))
-        mono= rgba.split()[-1]
-        mono=np.array(mono)>0.01
+                          self.test_id/'geo.png').crop((588, 192, 1331, 935))
+        mono = rgba.split()[-1]
+        mono = np.array(mono) > 0.01
         image = mono*1.0
         return image
 
@@ -93,44 +125,47 @@ class Test(Info):
                              m_MS[(corner+1) % 4, :5])
         return m
 
-    def get_error(self, eoi:tuple)->float:
+    def get_error(self, eoi: tuple) -> float:
         return self.global_err[eoi[0]][eoi[1]]
 
-    def get_forces(self)->tuple:
+    def get_forces(self) -> tuple:
         """ONLY FOR LIN COMPUTATION"""
-        rf=np.zeros((4,10,2,3))
+        rf = np.zeros((4, 10, 2, 3))
         root = Path('.').absolute().parent
         file = np.loadtxt(root/self.campagne/'results' /
-                         self.test_id/'PTBC.csv', delimiter=',')
-        extracted_disp_and_force={
-        'COU':[[]]*(10*4*12),
-        'TBC':[[]]*(10*4*12)
+                          self.test_id/'PTBC.csv', delimiter=',')
+        extracted_disp_and_force = {
+            'COU': [[]]*(10*4*12),
+            'TBC': [[]]*(10*4*12)
         }
         with open(root/self.campagne/'results' /
-                         self.test_id/'COUP.csv', "r") as f:
-            reader = csv.reader(f,delimiter=',')
-            first_line=True
-            line_number=0
+                  self.test_id/'COUP.csv', "r") as f:
+            reader = csv.reader(f, delimiter=',')
+            first_line = True
+            line_number = 0
             for row in reader:
                 if first_line:
-                    time_step=[float(i) for i in row]
-                    first_line=False
+                    time_step = [float(i) for i in row]
+                    first_line = False
                 else:
-                    extracted_disp_and_force['COU'][line_number-1]=[float(i) for i in row]
-                line_number+=1
+                    extracted_disp_and_force['COU'][line_number -
+                                                    1] = [float(i) for i in row]
+                line_number += 1
         with open(root/self.campagne/'results' /
-                         self.test_id/'PTBC.csv', "r") as f:
-            reader = csv.reader(f,delimiter=',')
-            first_line=True
-            line_number=0
+                  self.test_id/'PTBC.csv', "r") as f:
+            reader = csv.reader(f, delimiter=',')
+            first_line = True
+            line_number = 0
             for row in reader:
                 if first_line:
-                    time_step=[float(i) for i in row]
-                    first_line=False
+                    time_step = [float(i) for i in row]
+                    first_line = False
                 else:
-                    extracted_disp_and_force['TBC'][line_number-1]=[float(i) for i in row]
-                line_number+=1
-        return time_step,extracted_disp_and_force
+                    extracted_disp_and_force['TBC'][line_number -
+                                                    1] = [float(i) for i in row]
+                line_number += 1
+        return time_step, extracted_disp_and_force
+
 
 if __name__ == '__main__':
     pass
