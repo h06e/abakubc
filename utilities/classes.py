@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 from math import *
+from math_func import *
 
 
 class Test():
@@ -35,7 +36,7 @@ class Test():
         ) else None
         self.K_plane_stress = results['K_plane_stress'] if 'K_plane_stress' in results.keys(
         ) else None
-        self.global_err = results['global_err']
+        # self.global_err = results['global_err']
         self.skipped_cyl = results['skipped_cyl']
         self.strain_field = results['strain_field']
         self.strain_th = results['strain_th']
@@ -68,7 +69,7 @@ class Test():
             'K_plane_stress_KUBC': self.K_plane_stress_KUBC,
             'K_plane_stress_PBC': self.K_plane_stress_PBC,
             'K_plane_stress': self.K_plane_stress,
-            'global_err': self.global_err,
+            # 'global_err': self.global_err,
             'skipped_cyl': self.skipped_cyl,
             'strain_field': self.strain_field,
             'strain_th': self.strain_th,
@@ -106,9 +107,6 @@ class Test():
         shutil.copyfile(root/self.campagne/'results'/self.test_id /
                         'geo.png', destination/f'{self.test_id}.png')
 
-    def get_err(self, err: tuple) -> float:
-        return self.global_err[err[0]][err[1]]
-
     def get_MS(self) -> np.ndarray:
         m = np.zeros((4, 10))
         for i_cote, cote in enumerate(self.skipped_cyl):
@@ -126,7 +124,15 @@ class Test():
         return m
 
     def get_error(self, eoi: tuple) -> float:
-        return self.global_err[eoi[0]][eoi[1]]
+        """Erreur avec notation de Kelvin"""
+        if self.K_plane_stress:
+            k_list=[self.K_plane_stress,self.K_field_dic,self.K_panto_dic]
+        else:
+            k_list=[self.K_plane_stress_PBC,self.K_plane_stress_KUBC,self.K_field_dic,self.K_panto_dic]
+        a=voigt2kelvin(np.array(k_list[eoi[0]]))
+        b=voigt2kelvin(np.array(k_list[eoi[1]]))
+        return 100*norme(b-a)/norme(a)
+
 
     def get_forces(self) -> tuple:
         """ONLY FOR LIN COMPUTATION"""

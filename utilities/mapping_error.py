@@ -69,7 +69,7 @@ plt.draw()
 # ******* Return the best test *****************
 best_test_key, best_test = get_best_test(data, (0, 3))
 print(
-    f'The best test was achieved with the {best_test_key} leading to an error of {best_test.global_err[0][3]}')
+    f'The best test was achieved with the {best_test_key} leading to an error of {best_test.get_error((0,3))}')
 
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

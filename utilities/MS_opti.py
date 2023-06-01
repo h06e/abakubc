@@ -27,7 +27,7 @@ for i, func in enumerate(function):
     criteria=[]
     for _,test in data.items():
         if eval(func)(test) is not None:
-            err.append(test.get_err(EOI))
+            err.append(test.get_error(EOI))
             criteria.append(eval(func)(test))
     plt.subplot(151+i)
     plot_box2(criteria,err, step=0.1, ylabel=f'{func}')

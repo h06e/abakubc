@@ -6,7 +6,10 @@ from funcData import *
 
 np.set_printoptions(precision=2)
 
-campagnes=['campagne_honey','campagne_honey_CC']
+campagnes = ['campagne_honey','campagne_honey_CC','campagne_honey_UR3_S7','campagne_honey_UR3_S13',
+             'campagne_carre','campagne_carre_CC','campagne_carre_UR3_S7','campagne_carre_UR3_S13',
+             'campagne_trian','campagne_trian_CC','campagne_trian_UR3_S7','campagne_trian_UR3_S13',
+             'campagne_hexac','campagne_hexac_CC','campagne_hexac_UR3_S7','campagne_hexac_UR3_S13']
 
 data=read_data_from_database(campagnes)
 print(data.keys())

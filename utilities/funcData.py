@@ -39,22 +39,24 @@ def read_data_from_campaigns(campagnes: list) -> dict[dict[Test]]:
     print(f'Lecture des données réalisée en {t_end-t_start :.5f}s')
     return data
 
+
 def read_data_from_database(campagnes: list) -> dict[dict[Test]]:
     """Same as read_data_from_campaigns but using a full database file (no pic)"""
     ROOT = Path('.').absolute().parent
-    data={}
+    data = {}
     t_start = perf_counter()
     for campagne in campagnes:
-        data[campagne]={}
+        data[campagne] = {}
         with open(ROOT/'database'/f'{campagne}.json', 'r') as f:
             data_from_file = json.load(f)
-        for test_id,test in data_from_file.items():
-            if type(test)==str:
-                continue # It is the date info
+        for test_id, test in data_from_file.items():
+            if type(test) == str:
+                continue  # It is the date info
             data[campagne][test_id] = Test(test, test, campagne)
     t_end = perf_counter()
     print(f'Lecture des données réalisée en {t_end-t_start :.5f}s')
     return data
+
 
 def get_bulk_data(data: dict[dict[Test]]) -> dict[str, Test]:
     """Allow to get bulk data (suppress the campagne name stage)"""
@@ -67,7 +69,7 @@ def get_bulk_data(data: dict[dict[Test]]) -> dict[str, Test]:
 def get_best_test(dict_of_tests: dict[Test], eoi: tuple = (0, 3), number: int = 1) -> tuple[str, Test]:
     dic = {}
     for _, test in dict_of_tests.items():
-        dic |= {test: test.global_err[eoi[0]][eoi[1]]}
+        dic |= {test: test.get_error(eoi)}
     s = {k: v for k, v in sorted(dic.items(), key=lambda item: item[1])}
     final = []
     for t in s:
@@ -78,7 +80,7 @@ def get_best_test(dict_of_tests: dict[Test], eoi: tuple = (0, 3), number: int = 
 def get_worse_test(dict_of_tests: dict[Test], eoi: tuple = (0, 3), number: int = 1) -> tuple[str, Test]:
     dic = {}
     for _, test in dict_of_tests.items():
-        dic |= {test: test.global_err[eoi[0]][eoi[1]]}
+        dic |= {test: test.get_error(eoi)}
     s = {k: v for k, v in sorted(dic.items(), key=lambda item: item[1])}
     final = []
     for t in s:
@@ -254,10 +256,10 @@ def plot_map_theta_size(data: dict[Test], data_size: tuple, eoi: tuple, angle_ma
     for test_id, test in data.items():
         scale, angle, idx, idy = tuple(map(int, test_id.split('_')[1:]))
         error_per_angle[angle, scale-7, idx,
-                        idy] = test.global_err[eoi[0]][eoi[1]]
+                        idy] = test.get_error(eoi)
         if angle == 0 and loop:
             error_per_angle[-1, scale-7, idx,
-                            idy] = test.global_err[eoi[0]][eoi[1]]
+                            idy] = test.get_error(eoi)
 
     error_per_angle_median = np.nanquantile(error_per_angle, 0.5, axis=(2, 3))
     error_per_angle_q1 = np.nanquantile(error_per_angle, 0.25, axis=(2, 3))
@@ -381,33 +383,6 @@ def plot_coef_matrix_per_angle(data: dict[Test], data_size: tuple, angle_max: fl
 
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-
-def norme(k):
-    return sqrt(np.sum(k**2))
-
-
-def rot_voigt(k, angle):
-    c, s = cos(angle), sin(angle)
-    T = np.array([[c**2, s**2, c*s],
-                  [s**2, c**2, -c*s],
-                  [-2*s*c, 2*c*s, (c**2-s**2)]])
-    return np.dot(np.dot(np.transpose(T), k), T)
-
-
-def rot_kelvin(k, angle):
-    c, s = cos(angle), sin(angle)
-    T = np.array([[c**2, s**2, sqrt(2)*c*s],
-                  [s**2, c**2, -sqrt(2)*c*s],
-                  [-sqrt(2)*s*c, sqrt(2)*c*s, (c**2-s**2)]])
-    return np.dot(np.dot(np.transpose(T), k), T)
-
-
-def voigt2kelvin(k):
-    a = np.array([[1, 1, sqrt(2)],
-                  [1, 1, sqrt(2)],
-                  [sqrt(2), sqrt(2), 2]])
-    return a*k
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
