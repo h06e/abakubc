@@ -43,7 +43,10 @@ def get_sym_error(k: np.ndarray) -> float:
     k_sym = 0.5*(k+np.transpose(k))
     return 100*norme(k-k_sym)/norme(k)
 
-def get_error_custom (kref:list, k2:list)-> float:
-    kref=voigt2kelvin(np.array(kref))
-    k2=voigt2kelvin(np.array(k2))
+def get_error_custom (kref:np.ndarray, k2:np.ndarray)-> float:
+    kref=voigt2kelvin(kref)
+    k2=voigt2kelvin(k2)
     return 100*norme(k2-kref)/norme(k2)
+
+def get_sym_part(k:list)-> np.ndarray:
+    return 0.5*(np.array(k)+np.transpose(np.array(k)))
