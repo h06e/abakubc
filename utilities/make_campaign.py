@@ -331,7 +331,7 @@ new_campaign_name = 'campagnes_vierges/campagne_trian.csv'
 test['sample_name'] = 'triangle'
 L, width = 28.0, 4.0
 length_x_default_scale = 2*L  # * See PBC gen files
-length_y_default_scale = 4*L*tan(pi/6.0)
+length_y_default_scale = 2*L*tan(pi/6.0)
 scale_factors = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3]
 # scale_factors = [1.3]
 
