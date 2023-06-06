@@ -37,22 +37,21 @@ def init_campagne(campagne_name):
     return paths, get_tests_to_compute(campagne)
 
 def update_campagne(campagne_name):
-    """Update the campaign csv with the tests which has been completed"""
+    """Update the campaign csv with the tests which have been completed"""
     results_path=Path(campagne_name)/'results'
     completed_tests=list(results_path.glob('**/final_data.json'))
     header, campagne = manipulation.read_campagne(campagne_name)
 
     for file in completed_tests:
-        data=json.load(open(file,'r'))
-
+        # data=json.load(open(file,'r'))
         test_name=file.parent.name
-        index_test = next((idx for (idx, t) in enumerate(campagne)
-                        if t['test_id'] == test_name), None)
+        print(test_name)
+        index_test = next((idx for (idx, t) in enumerate(campagne) if t['test_id'] == test_name), None)
 
         df = pd.read_csv(f'{campagne_name}.csv', delimiter=';')
-        if df.loc[index_test, 'flag_make_inp'] == 'True':
+        if df.loc[index_test, 'flag_make_inp'] in ['True', True]:
             # This line was computed during this run
-            df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m_%d_%H%M")
+            # df.loc[index_test, 'status'] = 'COMPLETED_'+time.strftime("%m_%d_%H%M")
             df.loc[index_test, 'flag_make_inp'] = 'False'
-            df.loc[index_test, 'err'] = str(data['global_err']).replace('[', '').replace(']', '')
+            # df.loc[index_test, 'err'] = str(data['global_err']).replace('[', '').replace(']', '')
             df.to_csv(f'{campagne_name}.csv', index=False, sep=';')

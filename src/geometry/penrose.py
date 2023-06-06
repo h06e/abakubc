@@ -73,7 +73,7 @@ def make_geo_2d(paths, test, skip_cylinders):
             s.Line(point1=tuple(coordinates[c[0]-1]),
                    point2=tuple(coordinates[c[1]-1]))
 
-    s.rectangle(point1=(-12.5, -12.5), point2=(12.5, 12.5))
+    s.rectangle(point1=(-30, -30), point2=(30, 30))
     s.scale(objectList=tuple(gg[1] for gg in g.items()), scaleCenter=(
         0.0, 0.0), scaleValue=scale)
     s.move(vector=(144.0, 144.0), objectList=tuple(gg[1] for gg in g.items()))

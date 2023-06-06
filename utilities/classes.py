@@ -102,10 +102,10 @@ class Test():
         image = mono*1.0
         return image
 
-    def export_geo(self, destination=Path('.')) -> None:
-        root = Path('.')
+    def export_geo(self, destination) -> None:
+        root = Path('.').absolute().parent
         shutil.copyfile(root/self.campagne/'results'/self.test_id /
-                        'geo.png', destination/f'{self.test_id}.png')
+                        'geo.png', f'{destination}/{self.test_id}.png')
 
     def get_MS(self) -> np.ndarray:
         m = np.zeros((4, 10))

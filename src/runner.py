@@ -199,13 +199,9 @@ def run_test(test):
 # *******************************************
 
 # * reset the folder
-# ! DEBUG MODE Will remove all folders except the ones below !!
+# ! DEBUG MODE !
 DEBUG=False
-if DEBUG:
-    for file in os.listdir(os.getcwd()):
-        if not os.path.isfile(file) and file not in ['utilities', 'src', '.git', 'images']:
-            shutil.rmtree(file)
-    time.sleep(1)
+
 
 N_TASK = int(sys.argv[-2])
 campagne_name = sys.argv[-1]
