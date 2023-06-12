@@ -97,8 +97,8 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
             os.remove(f'{PBC_name}.tmp')
         except:
             pass
-    if not DEBUG: 
-        print('netoyage')
+    if test['debug']=='False': 
+        print('nettoyage')
         shutil.rmtree(test['test_id'])
     
 # * -------------------------------------------

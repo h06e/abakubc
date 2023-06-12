@@ -11,7 +11,8 @@ np.set_printoptions(precision=2)
 campagnes = ['campagne_honey','campagne_honey_CC','campagne_honey_UR3',
              'campagne_carre','campagne_carre_CC','campagne_carre_UR3',
              'campagne_trian','campagne_trian_CC','campagne_trian_UR3',
-             'campagne_hexac','campagne_hexac_CC','campagne_hexac_UR3']
+             'campagne_hexac','campagne_hexac_CC','campagne_hexac_UR3',
+             'campagne_mono', 'campagne_penrose', 'campagne_r0']
 
 for campagne in campagnes:
     data=read_data_from_campaigns([campagne])

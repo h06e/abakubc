@@ -80,7 +80,7 @@ index=1
 """ STEP PARAMETERS"""
 s1_initial_inc = 1.0        #Size of the initrial increment. (Better to keep low to allow smooth transition between intermediate steps)
 s1_max_inc = 1.0            #Maximum allowable increment size during the simulation (between 0 and 1 )
-s1_min_inc = 1.0E-5         #Minimum allowable increment size (smaller numbers can help convergence but also hinder performance)
+s1_min_inc = 1.0E-6         #Minimum allowable increment size (smaller numbers can help convergence but also hinder performance)
 s1_max_num_inc = 10000      #Maximum number of increments allowed in the step.
 s1_NL = ON                 #Nlgeom MANDATORY for stiffness, clearance in the pantographs
 para_default=[s1_initial_inc,s1_max_inc,s1_min_inc,s1_max_num_inc,s1_NL]

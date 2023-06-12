@@ -302,4 +302,3 @@ Si l'extraction se focalisait si l'extraction des champs de déformation, de con
 Toutes les données sont sauvegardées dans le répertoire de la campagne dans le fichier `final_data.json`, par exemple `campagne_test/results/Z_test_1/final_data.json`.
 
 
-
