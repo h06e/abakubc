@@ -94,7 +94,7 @@ def proceed_computation(paths, test):
     # Resolve A*d=U with epsilon=[e11, e22, e12, MCR1, MCR2, MDRR12]
     nodes_coord = np.loadtxt(os.path.join(
         res_folder, 'node_coord.csv'), delimiter=',')
-    area_of_interest = 4
+    area_of_interest = 4 # 4
     strain_field = []
     residuals = []
     for step_idx in range(1, 4):
@@ -106,7 +106,7 @@ def proceed_computation(paths, test):
     # ---------------------------------------------
     # Computation of the mean stress field
     print('computing stress...')
-    area_of_interest = 4
+    area_of_interest = 4 # 4
     stress_field = []
     std_min_max = []
     for step_idx in range(1, 4):
