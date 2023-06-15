@@ -91,7 +91,8 @@ class Test():
         mono = np.array(mono) > 0.01
         image = np.asarray(mono)
         plt.imshow(image, cmap='Greys')
-        plt.show()
+        plt.axis('off')
+        
 
     def get_geo(self) -> np.ndarray:
         root = Path('.').absolute().parent
