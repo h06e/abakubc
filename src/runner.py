@@ -97,7 +97,7 @@ def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
             os.remove(f'{PBC_name}.tmp')
         except:
             pass
-    if test['debug']=='False': 
+    if test['debug']in ['False', False]: 
         print('nettoyage')
         shutil.rmtree(test['test_id'])
     
@@ -171,8 +171,11 @@ def run_test(test):
     # * Computing the result
     logging.info('Computing the data')
     try:
+        print(paths)
+        print(test)
         main_compute.proceed_computation(paths, test)
     except Exception as e:
+        print(e)
         logging.error('Error while the computation')
         if not DEBUG:
             remove_files_during_run(test, paths, KUBC_name, PBC_name)

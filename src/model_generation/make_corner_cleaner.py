@@ -13,13 +13,13 @@ from connectorBehavior import *
 from math import *
 from constants import *
 
-def main_clean_corners(test):
+def main_clean_corners(paths,test):
     if test['dim']==3:
-        clean_corners(test)
+        clean_corners(paths, test)
     else:
-        clean_corners_2d(test)
+        clean_corners_2d(paths, test)
 
-def clean_corners(test):
+def clean_corners(paths, test):
     model=mdb.models['Model-1']
 
     print('Corner cleaner...')
@@ -107,10 +107,11 @@ def clean_corners(test):
 
 
 
-def clean_corners_2d(test):
+def clean_corners_2d_old(paths, test):
     model=mdb.models['Model-1']
 
     print('Corner cleaner...')
+
     s = model.ConstrainedSketch(name='__profile__', sheetSize=200.0)
     g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
     s.setPrimaryObject(option=STANDALONE)
@@ -192,3 +193,34 @@ def clean_corners_2d(test):
             del a1.features['corner_cleaner-'+str(corner)]
     
     print('Corner cleaner completed.')
+
+def clean_corners_2d(paths, test):
+    try:
+        acis = mdb.openAcis(
+        os.path.join(os.path.join(paths[SRC], 'ressources'), 'cc_sketch.sat'), 
+        scaleFromFile=OFF)
+        mdb.models['Model-1'].ConstrainedSketchFromGeometryFile(name='cc_sketch', 
+            geometryFile=acis)
+        
+
+        p = mdb.models['Model-1'].parts['specimen']
+        f, e = p.faces, p.edges
+        t = p.MakeSketchTransform(sketchPlane=f[0], 
+            sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(144.0, 144.0, 0.0))
+        s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', 
+            sheetSize=814.58, gridSpacing=20.36, transform=t)
+        
+        g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+        s.setPrimaryObject(option=SUPERIMPOSE)
+        p = mdb.models['Model-1'].parts['specimen']
+        p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
+        s.retrieveSketch(sketch=mdb.models['Model-1'].sketches['cc_sketch'])
+    
+        p = mdb.models['Model-1'].parts['specimen']
+        f1, e1 = p.faces, p.edges
+        p.CutExtrude(sketchPlane=f1[0], sketchUpEdge=e1[85], sketchPlaneSide=SIDE1, 
+            sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
+        s.unsetPrimaryObject()
+        del mdb.models['Model-1'].sketches['__profile__']
+    except:
+        pass # Les CC se sont rien mis sous la dent

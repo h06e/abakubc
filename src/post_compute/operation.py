@@ -59,6 +59,18 @@ def compute_force(side,direction,sens,step_of_interest,cylinders):
                 force-=cylinder.rf[direction-1][step_of_interest]*(NB_CYL-cylinder.number)/(NB_CYL+1)
     return force
 
+def compute_force2(dat:dict, cote:int, composante:str, sens):
+    force = 0.0
+    for cyl_number in range(10):
+        try:
+            f_cyl = dat[f'TBC_{["B", "R", "T", "L"][cote]}_{cyl_number}'][composante]# 'TBC_R_3'
+        except KeyError:
+            pass
+        else:
+            force += f_cyl * (cyl_number+1) /11 if sens == '+' else f_cyl * (10-cyl_number) /11
+    return force
+
+
 def comp_1(A,B):
     A_vec=A.flatten()
     B_vec=B.flatten()
@@ -174,12 +186,19 @@ def get_porosity (test,paths):
             return float(p)
 
 
+def norme(k: np.ndarray) -> float:
+    return sqrt(np.sum(k**2))
+
+def voigt2kelvin(k: np.ndarray) -> np.ndarray:
+    a = np.array([[1, 1, sqrt(2)],
+                  [1, 1, sqrt(2)],
+                  [sqrt(2), sqrt(2), 2]])
+    return a*k
+
 def compute_error(K1,K2):
-    s=(K1[0,0]-K2[0,0])**2+(K1[1,1]-K2[1,1])**2+(K1[2,2]-K2[2,2])**2+ \
-        ((K1[1,0]-K2[1,0])**2+(K1[0,1]-K2[0,1])**2)+\
-        ((K1[2,0]-K2[2,0])**2+(K1[0,2]-K2[0,2])**2)+\
-        ((K1[1,2]-K2[1,2])**2+(K1[2,1]-K2[2,1])**2)
-    return round(100*sqrt(s)/np.max(K2),2)
+    a=voigt2kelvin(np.array(K1))
+    b=voigt2kelvin(np.array(K2))
+    return 100*norme(b-a)/norme(a)
 
 def compute_total_deviation_matrix(L):
     deviations=np.empty((len(L),len(L)))

@@ -90,6 +90,7 @@ class Test():
         mono = rgba.split()[-1]
         mono = np.array(mono) > 0.01
         image = np.asarray(mono)
+        plt.figure(figsize=(3,3))
         plt.imshow(image, cmap='Greys')
         plt.axis('off')
         
