@@ -13,7 +13,6 @@ from constants import *
 from random import random
 from pathlib import Path
 import pandas as pd
-from func import manipulation
 import json
 
 def remove_files(path: str, types_to_remove: list[str] = []) -> None:
@@ -218,7 +217,7 @@ with Pool(processes=N_TASK-1) as pool:
 
 # * Update of the campagne
 
-func.update_campagne(campagne_name)
+func.update_campagne(paths, campagne_name)
 
 # * Essaye d'envoyer une notification de bureau
 try:

@@ -41,7 +41,7 @@ paths = eval(sys.argv[-1])
 
 # ! ATTENTION PYTHON 2 !!!!!!!!!
 # * For beguging, turn force_gen to True to force the generation of the specimen and not take the one existing in the sample_bank
-FORCE_GEN=test['debug']
+FORCE_GEN=test['debug'] or test['corner_cleaner']
 
 Mdb()
 session.journalOptions.setValues(

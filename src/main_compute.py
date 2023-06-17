@@ -51,6 +51,7 @@ def proceed_computation(paths, test):
                 pass
 
     res_folder = os.path.join(paths[RES_DIR], test['test_id'])
+    print(res_folder)
     porosity = operation.get_porosity(test, paths)
     number_of_step = post_reader.get_number_of_step(test)
 
@@ -278,5 +279,5 @@ def proceed_computation(paths, test):
 
     if not test['debug']:
         for file in os.listdir(res_folder):
-            if 'step' in file or 'node' in file or 'elements' in file or 'connectivity' or 'cyldata' in file:
+            if 'step' in file or 'node' in file or 'elements' in file or 'connectivity' in file or 'cyldata' in file:
                 os.remove(os.path.join(res_folder, file))

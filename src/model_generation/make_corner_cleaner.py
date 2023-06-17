@@ -195,32 +195,24 @@ def clean_corners_2d_old(paths, test):
     print('Corner cleaner completed.')
 
 def clean_corners_2d(paths, test):
-    try:
-        acis = mdb.openAcis(
-        os.path.join(os.path.join(paths[SRC], 'ressources'), 'cc_sketch.sat'), 
-        scaleFromFile=OFF)
-        mdb.models['Model-1'].ConstrainedSketchFromGeometryFile(name='cc_sketch', 
-            geometryFile=acis)
+
+    acis = mdb.openAcis(
+    os.path.join(os.path.join(paths[SRC], 'ressources'), 'cc_sketch.sat'), 
+    scaleFromFile=OFF)
+    mdb.models['Model-1'].ConstrainedSketchFromGeometryFile(name='cc_sketch', 
+        geometryFile=acis)
         
 
-        p = mdb.models['Model-1'].parts['specimen']
-        f, e = p.faces, p.edges
-        t = p.MakeSketchTransform(sketchPlane=f[0], 
-            sketchPlaneSide=SIDE1, sketchOrientation=RIGHT, origin=(144.0, 144.0, 0.0))
-        s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', 
-            sheetSize=814.58, gridSpacing=20.36, transform=t)
-        
-        g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
-        s.setPrimaryObject(option=SUPERIMPOSE)
-        p = mdb.models['Model-1'].parts['specimen']
-        p.projectReferencesOntoSketch(sketch=s, filter=COPLANAR_EDGES)
-        s.retrieveSketch(sketch=mdb.models['Model-1'].sketches['cc_sketch'])
-    
-        p = mdb.models['Model-1'].parts['specimen']
-        f1, e1 = p.faces, p.edges
-        p.CutExtrude(sketchPlane=f1[0], sketchUpEdge=e1[85], sketchPlaneSide=SIDE1, 
-            sketchOrientation=RIGHT, sketch=s, flipExtrudeDirection=OFF)
-        s.unsetPrimaryObject()
-        del mdb.models['Model-1'].sketches['__profile__']
-    except:
-        pass # Les CC se sont rien mis sous la dent
+    s = mdb.models['Model-1'].ConstrainedSketch(name='__profile__', 
+        sheetSize=814.58, gridSpacing=20.36)
+    g, v, d, c = s.geometry, s.vertices, s.dimensions, s.constraints
+    s.setPrimaryObject(option=SUPERIMPOSE)
+    p = mdb.models['Model-1'].parts['specimen']
+    s.sketchOptions.setValues(gridOrigin=(144.0, 144.0))
+    s.retrieveSketch(sketch=mdb.models['Model-1'].sketches['cc_sketch'])
+    s.move(vector=(144.0,144.0), objectList = tuple((g[k] for k in g.keys())))
+
+    p = mdb.models['Model-1'].parts['specimen']
+    p.Cut(sketch=s)
+    s.unsetPrimaryObject()
+    del mdb.models['Model-1'].sketches['__profile__']
