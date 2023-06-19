@@ -42,43 +42,18 @@ class Test():
         self.strain_th = results['strain_th']
         self.stress_field = results['stress_field']
         self.stress_pantos = results['stress_pantos']
+        self.force_panto = results['force_panto'] if 'force_panto' in results.keys(
+        ) else None
+        self.cyl_out = results['cyl_out'] if 'cyl_out' in results.keys(
+        ) else None
         self.campagne = campagne
         self.support_links = None
 
     def get_exportable_dict(self):
-        all_dict = {
-            'test_id': self.test_id,
-            'sample_name': self.sample_name,
-            'dim': self.dim,
-            'geo_parameters': self.geo_parameters,
-            'mesh_size': self.mesh_size,
-            'thickness': self.thickness,
-            'trans_rot': self.trans_rot,
-            'corner_cleaner': self.corner_cleaner,
-            'mat': self.mat,
-            'free_rotation': self.free_rotation,
-            'free_u3': self.free_u3,
-            'perfect_panto': self.perfect_panto,
-            'stiff_panto': self.stiff_panto,
-            'friction': self.friction,
-            'clearance': self.clearance,
-            'K_field_bc': self.K_field_bc,
-            'K_field_dic': self.K_field_dic,
-            'K_panto_bc': self.K_panto_bc,
-            'K_panto_dic': self.K_panto_dic,
-            'K_plane_stress_KUBC': self.K_plane_stress_KUBC,
-            'K_plane_stress_PBC': self.K_plane_stress_PBC,
-            'K_plane_stress': self.K_plane_stress,
-            # 'global_err': self.global_err,
-            'skipped_cyl': self.skipped_cyl,
-            'strain_field': self.strain_field,
-            'strain_th': self.strain_th,
-            'stress_field': self.stress_field,
-            'stress_pantos': self.stress_pantos,
-            'campagne': self.campagne,
-            'support_links': self.support_links
-        }
-        return all_dict
+        full_dict = {}
+        for key in [k for k in dir(self) if not k.startswith('__')]:
+            full_dict[key] = eval(f'self.{key}')
+        return full_dict
 
     def get_number_ms(self) -> int:
         return sum([len(i) for i in self.skipped_cyl])
