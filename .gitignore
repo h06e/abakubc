@@ -42,7 +42,7 @@ campagne_r0.csv
 */
 !src/
 !utilities/
-!database/
+database/
 
 campagne_vierge/
 campagne_carre/

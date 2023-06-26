@@ -204,7 +204,6 @@ def run_test(test):
 # ! DEBUG MODE !
 DEBUG=False
 
-
 N_TASK = int(sys.argv[-2])
 campagne_name = sys.argv[-1]
 paths, tests_to_run = func.init_campagne(campagne_name)
