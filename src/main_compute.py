@@ -253,8 +253,9 @@ def proceed_computation(paths, test):
     data['skipped_cyl'] = skip_cylinders
 
     with open(os.path.join(res_folder, 'final_data.json'), "w") as fp:
-        json.dump(data, fp, indent=4, separators=(", ", ": "),
-                  sort_keys=True)  # encode dict into JSON
+        # json.dump(data, fp, indent=4, separators=(", ", ": "),
+        #           sort_keys=True)  # encode dict into JSON
+        json.dump(data, fp)
 
     # * update de la campagne
     # ? used to update the campagne but was removed because of several error during multiprocesses

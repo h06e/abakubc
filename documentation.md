@@ -232,7 +232,7 @@ Enfin, on déplace le fichier odb dans le dossier de la campagne si le paramètr
 Par *test principale*, j'entends l'essais de la ligne et pas le PBC ou KUBC théorique. `src/make_inp.py` génère cet inp, c'est ce que nous allons expliquer ici. Ce script est en python2 car il est exécuté par Abaqus sous forme de script (attention, certaines commandes ne fonctionnent pas et ne donne pas d'erreur très explicite, par exemple, les f-string n'existent pas !!!!!)
 
 On commence par traduire les arguments d'entré avec la création d'un dictionnaire `test` avec toutes les infos du test données par la campagne grâce à :
-```
+```py
 test = eval(sys.argv[-2])
 for i in test:
     if len(test[i])==0:

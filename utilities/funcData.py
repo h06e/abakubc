@@ -22,59 +22,20 @@ def read_campagne(file_name) -> tuple[list, list[dict]]:
 
 
 def read_data_from_campaigns(campagnes: list) -> dict[dict[Test]]:
-    """Read and save of the tests in the campaign list campagne
+    """Read and save of the tests of the campaign.
     Return a dict organized as data[campagne_name][test_id][XX]"""
     ROOT = Path('.').absolute().parent
     data = {}
     t_start = perf_counter()
     for campagne in campagnes:
         data[campagne] = {}
-        _, tests_info = read_campagne(campagne)
         tests = list((ROOT/campagne/'results').glob('**/final_data.json'))
         for test in tests:
             with open(test) as f:
-                data[campagne][test.parent.name] = Test(
-                    tests_info[test.parent.name], json.load(f), campagne)
+                data[campagne][test.parent.name] = Test(json.load(f), campagne)
     t_end = perf_counter()
     print(f'Lecture des données réalisée en {t_end-t_start :.5f}s')
     return data
-
-
-def read_data_from_database(campagnes: list) -> dict[dict[Test]]:
-    """Same as read_data_from_campaigns but using a full database file (no pic)"""
-    ROOT = Path('.').absolute().parent
-    data = {}
-    t_start = perf_counter()
-    for campagne in campagnes:
-        data[campagne] = {}
-        with open(ROOT/'database'/f'{campagne}.json', 'r') as f:
-            data_from_file = json.load(f)
-        line_img = get_line_img_database(campagne)
-        for test_id, test in data_from_file.items():
-            if type(test) == str:
-                continue  # It is the date info
-            data[campagne][test_id] = Test(test, test, campagne,
-                                           line_img[test_id] if line_img else None)
-    t_end = perf_counter()
-    print(f'Lecture des données réalisée en {t_end-t_start :.5f}s')
-    return data
-
-
-def get_line_img_database(campagne:str)->int:
-    ROOT = Path('.').absolute().parent
-    images_dict={}
-    try:
-        with open(ROOT/'database'/f'{campagne}.iii', 'br') as f:
-            previous_line=None
-            i=0
-            for line in f:
-                if line == b'\x89PNG\r\n':
-                    images_dict[previous_line.decode('UTF-8')[:-1]]=i
-                previous_line = line
-                i+=1
-    except:
-        return None
-    return images_dict
 
 
 def get_bulk_data(data: dict[dict[Test]]) -> dict[str, Test]:
