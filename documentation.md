@@ -153,7 +153,7 @@ Créer une campagne et la placer dans le `ROOT`. Par exemple : `campagne_test.cs
 - `mesh_size` : taille du maillage (tous les éléments ont la même taille). (float)
 - `thickness` : épaisseur de l'éprouvette (2 et 3D). (flaot)
 - `trans_rot` : Translation et rotation du motif en [mm]. (3 float séparés par des virgules)
-- `corner_cleaner` : Effectuer les entailles dans les coins. (bool, vide=`False`)
+- `corner_cleaner` : Effectuer les entailles. Vide : aucune entaille, `full` (ou `True`) : entailles dans les coind et entre les cylindres, ou `corner` : entailles dans les coins uniquement. Les geométries des entailles sont dans `src/ressources/`
 - `mat` : Module d'Young et coefficient de Poisson du matériau élastique. (2 float séparés par des virgules)
 - `free_rotation` : Libre rotation ou non des cylindres. (bool)
 - `free_u3` : Pour calcul 3D seulement : si `False` il y a adhérence parfaite entre l'éprouvette et les cylindres (déplacement hors plan bloqué). Si `True`, ça revient à faire du 2D. (bool)

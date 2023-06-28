@@ -49,7 +49,7 @@ class Test():
         ) else None
         self.campagne = campagne
         self.support_links = None
-        self.force_panto = results['force_panto']
+        self.force_panto :list[dict]= results['force_panto']
         self.cyl_out = results['cyl_out']
 
     def get_exportable_dict(self):
@@ -64,17 +64,19 @@ class Test():
         return sum([len(i) for i in self.skipped_cyl])
     
 
-    def show_geo(self):
+    def show_geo(self, show=True, cmap='Greys', new=True):
         root = Path('.').absolute().parent
         rgba = Image.open(root/self.campagne/'results' /
                             self.test_id/'geo.png').crop((588, 192, 1331, 935))
         rgba.save('tmp.png',compress_level=9)
         mono = rgba.split()[-1]
         mono = np.array(mono) > 0.01
-        plt.figure(figsize=(3,3))
-        plt.imshow(np.asarray(mono), cmap='Greys')
+        if new:
+            plt.figure(figsize=(3,3))
+        plt.imshow(np.asarray(mono), cmap=cmap, extent =[0.05,0.95,0.05,0.95], alpha=0.2)
         plt.axis('off')
-        plt.show()
+        if show:
+            plt.show()
         return 
     
 
@@ -104,7 +106,74 @@ class Test():
         b=voigt2kelvin(np.array(k_list[eoi[1]]))
         return 100*norme(b-a)/norme(a)
 
+    def show_eff_corner(self, step=0,scale_fac=3,eoi=(0,3)) -> None:
+        ec=0.05
+        def draw_machine():
+            plt.plot([ec, 1-ec],[0,0],'b-')
+            plt.plot([ec, 1-ec],[1,1],'b-')
+            plt.plot([0, 0],[ec,1-ec],'b-')
+            plt.plot([1, 1],[ec,1-ec],'b-')
+            plt.text(0.1,0.1,'O', va='center', ha='center')
+            plt.text(0.9,0.1,'B', va='center', ha='center')
+            plt.text(0.1,0.9,'D', va='center', ha='center')
+            plt.text(0.9,0.9,'C', va='center', ha='center')
+            plt.text(0.5,0.1,'3', va='center', ha='center')
+            plt.text(0.9,0.5,'2', va='center', ha='center')
+            plt.text(0.5,0.9,'4', va='center', ha='center')
+            plt.text(0.1,0.5,'1', va='center', ha='center')
 
+        def draw_all_vec(scale=1):
+            for k,i in self.force_panto[step].items():
+                corner, edge, component = k.split('_')
+                if edge == '1':
+                    x0=-ec
+                elif corner in ['O', 'D']:
+                    x0=ec
+                elif edge == '2':
+                    x0=1+ec
+                else:
+                    x0=1-ec
+
+                if edge == '3':
+                    y0=-ec
+                elif corner in ['O', 'B']:
+                    y0=ec
+                elif edge == '4':
+                    y0=1+ec
+                else:
+                    y0=1-ec
+                if component=='x':
+                    plt.plot([x0,x0+i/scale],[y0,y0])
+                    plt.text(x0+i/scale,y0,f'{i:.0f}')
+                else:
+                    plt.plot([x0,x0],[y0,y0+i/scale])
+                    plt.text(x0,y0+i/scale,f'{i:.0f}')
+
+        scale=scale_fac*max([i for _,i in self.force_panto[step].items()])
+        plt.figure(figsize=(5,5))
+        self.show_geo(show=False, new=False)
+        draw_machine()
+        draw_all_vec(scale)
+        plt.text(0.5,0.5,f'Err. PBC/Panto.\n{self.get_error(eoi):.1f}\n{self.get_coef_dev()}',
+                  va='center',ha='center', fontsize=10)
+        plt.axis('equal')
+        plt.show()
+    
+    def get_coef_dev(self, rot=False):
+        if self.sample_name == 'monolithique':
+            k_ref=np.array(self.K_plane_stress)
+        else:
+            k_ref=np.array(self.K_plane_stress_PBC)
+        k_machine=np.array(self.K_panto_dic)
+        if rot:
+            k_ref=rotation_voigt(k_ref,-self.trans_rot[2])
+            k_machine=rotation_voigt(k_machine,-self.trans_rot[2])
+
+        string = f'     PBC    KUBC\n'
+        for i,j in [(0,0),(0,1),(2,2)]:
+            string += f'K{i+1}{j+1} {k_ref[i,j]:.1f}  {k_machine[i,j]:.1f} ({(k_machine[i,j]-k_ref[i,j])*100/k_ref[i,j]:+.0f}%)\n'
+
+        return string
 
 if __name__ == '__main__':
     pass

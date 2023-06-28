@@ -13,4 +13,4 @@
 ##cd
 ##code -r $SLURM_JOB_NAME.o$SLURM_JOB_ID
 cd /usrtmp/valmalette/abakubc/
-python3 src/runner.py $SLURM_NTASKS campagne_r0_new
+python3 src/runner.py $SLURM_NTASKS campagne_test

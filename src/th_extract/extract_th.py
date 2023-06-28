@@ -45,7 +45,7 @@ eps12 = e12/2
 
 if file_name.split('_')[0] == 'KUBC':
     area = 288*288
-else:
+else: # Give the total area of the PBC sample
     if test['sample_name'] == 'honey':
         L, width = test['geo_parameters']
         aa = L/2/tan(pi/3)
@@ -68,6 +68,12 @@ else:
     elif test['sample_name'] == 'triangle':
         width, space =test['geo_parameters']
         area= 2*space*2*space*tan(pi/6.0)
+    elif test['sample_name'] == 'carretrian':
+        width, space =test['geo_parameters']
+        area = space**2
+    elif test['sample_name'] == 'tetrachiral' :
+        L, width, radius = test['geo_parameters']
+        area=L**2
     else:
         raise ValueError
 

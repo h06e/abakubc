@@ -19,6 +19,8 @@ from geometry import losange
 from geometry import penrose
 from geometry import r0
 from geometry import triangle
+from geometry import carretrian
+from geometry import tetrachiral
 import time
 import csv
 from constants import *
