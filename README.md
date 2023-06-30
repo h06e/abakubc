@@ -36,7 +36,7 @@ Liste de choses à faire (27.06.2023) :
 - Faire un github pour processus de génération des éprouvettes
 
 
-
+<!--
 # discussion snub square avec nico
 
 Salut Nico, J'ai une petite Q rapide sur le snub square. Est-ce que c'est un matériau lattice comme j'ai trouvé dans quelques articles ? ou est-ce que c'est un monolithique hétérogène composé de deux matériaux différents ?
@@ -87,5 +87,4 @@ pour restaurer la symétrie sans avoir a augmenter la sépartion des echelles
   10 h 08
 Ok, en tout cas merci !
 
-
-
+-->

@@ -484,6 +484,13 @@ def assemble_model_2d(test, paths, step_list):
             toName='sample')
 
         skip_cylinders = [[],[],[],[]]
+
+        p = mdb.models['Model-1'].parts['sample']
+        f = p.faces
+        faces = f.getByBoundingBox(-TOL, -TOL, 0.0,
+                                SIDE_LENGTH+TOL, SIDE_LENGTH+TOL, 0.0)
+        region = p.Set(faces=faces, name='sample')
+        
     else:
         a = model.rootAssembly
         try:

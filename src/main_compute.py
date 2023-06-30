@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import csv
-import os
 from func import manipulation
 from post_compute import operation
 from post_compute.post_config import *
@@ -115,32 +114,34 @@ def proceed_computation(paths, test):
     # --------------------------------------------------
     # Computation of the strain field from the displacement
     # Resolve A*d=U with epsilon=[e11, e22, e12, MCR1, MCR2, MDRR12]
-    nodes_coord = np.loadtxt(os.path.join(
-        res_folder, 'node_coord.csv'), delimiter=',')
-    area_of_interest = 4 # 4
-    strain_field = []
-    residuals = []
-    for step_idx in range(1, 4):
-        d, residual = operation.get_strain_from_disp(
-            paths, res_folder, area_of_interest, step_idx, nodes_coord)[:3]
-        strain_field.append([float(d[tmp]) for tmp in range(3)])
-        residuals.append(residual)
+    # nodes_coord = np.loadtxt(os.path.join(
+    #     res_folder, 'node_coord.csv'), delimiter=',')
+    # area_of_interest = 4 # 4
+    # strain_field = []
+    # residuals = []
+    # for step_idx in range(1, 4):
+    #     d, residual = operation.get_strain_from_disp(
+    #         paths, res_folder, area_of_interest, step_idx, nodes_coord)[:3]
+    #     strain_field.append([float(d[tmp]) for tmp in range(3)])
+    #     residuals.append(residual)
 
-    # ---------------------------------------------
-    # Computation of the mean stress field
-    print('computing stress...')
-    area_of_interest = 4 # 4
-    stress_field = []
-    std_min_max = []
-    for step_idx in range(1, 4):
-        d, std_stress, minimum_stress, maximum_stress = operation.get_stress_average(
-            paths, res_folder, area_of_interest, step_idx, porosity)
-        stress_field.append([float(d[tmp]) for tmp in range(3)])
-        std_min_max.append([std_stress, minimum_stress, maximum_stress])
-
-    print(stress_field[0])
-    print(std_min_max[0])
-
+    # # ---------------------------------------------
+    # # Computation of the mean stress field
+    # print('computing stress...')
+    # area_of_interest = 4 # 4
+    # stress_field = []
+    # std_min_max = []
+    # for step_idx in range(1, 4):
+    #     d, std_stress, minimum_stress, maximum_stress = operation.get_stress_average(
+    #         paths, res_folder, area_of_interest, step_idx, porosity)
+    #     stress_field.append([float(d[tmp]) for tmp in range(3)])
+    #     std_min_max.append([std_stress, minimum_stress, maximum_stress])
+    # # Nouvelle optention des champs
+    AREA_OF_INTEREST=4
+    with open(os.path.join(res_folder,'fields.json'), 'r') as f:
+        field_dict=json.load(f)
+    strain_field = field_dict[str(AREA_OF_INTEREST)]['strain']
+    stress_field= field_dict[str(AREA_OF_INTEREST)]['stress']
     # ---------------------------------------
     # Mean stress value according to panthos
     print('Mean stress computation from the panthos...')
@@ -194,7 +195,8 @@ def proceed_computation(paths, test):
         'strain_field': strain_field,
         'strain_th': strain_th,
         'cyl_out': cyl_data,
-        'force_panto': force_panto
+        'force_panto': force_panto,
+        'strain_stress_area': field_dict
     }
 
     # * Ajout des matrices theorique et construction de la matrice d'erreur DANS l'ordre
