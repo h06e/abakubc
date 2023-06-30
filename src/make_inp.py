@@ -21,6 +21,8 @@ from geometry import r0
 from geometry import triangle
 from geometry import carretrian
 from geometry import tetrachiral
+from geometry import snubsquare
+from geometry import snubsquare2
 import time
 import csv
 from constants import *

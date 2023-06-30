@@ -90,7 +90,10 @@ def init_log(open_in_vsc=False):
 
 def remove_files_during_run(test, paths, KUBC_name=None, PBC_name=None):
     if KUBC_name:
-        os.remove(f'{KUBC_name}.tmp')
+        try:
+            os.remove(f'{KUBC_name}.tmp')
+        except:
+            pass
     if PBC_name:
         try:
             os.remove(f'{PBC_name}.tmp')

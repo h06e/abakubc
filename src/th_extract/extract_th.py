@@ -74,6 +74,11 @@ else: # Give the total area of the PBC sample
     elif test['sample_name'] == 'tetrachiral' :
         L, width, radius = test['geo_parameters']
         area=L**2
+    elif test['sample_name'] in ['snubsquare', 'snubsquare2']:
+        L =test['geo_parameters']
+        LC=L*cos(30.0*pi/180.0)
+        LS=L*sin(30.0*pi/180.0)
+        area=(LS+LC)**2
     else:
         raise ValueError
 

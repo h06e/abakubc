@@ -45,7 +45,6 @@ def update_campagne(paths,campagne_name):
     for file in completed_tests:
         # data=json.load(open(file,'r'))
         test_name=file.parent.name
-        print(test_name)
         index_test = next((idx for (idx, t) in enumerate(campagne) if t['test_id'] == test_name), None)
         if index_test:
             df = pd.read_csv(f'{campagne_name}.csv', delimiter=';')

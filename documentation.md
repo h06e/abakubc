@@ -302,3 +302,8 @@ Si l'extraction se focalisait si l'extraction des champs de déformation, de con
 Toutes les données sont sauvegardées dans le répertoire de la campagne dans le fichier `final_data.json`, par exemple `campagne_test/results/Z_test_1/final_data.json`.
 
 
+# Info en vrac
+
+La différence entre `snubsquare` et `snubsquare2` est le PBC qui n'est pas centré de la même manière. `snubsquare` sur le logange, et `snubsquare2` sur le carré. **ATTENTION les KUBC machine et theorique sont centré sur le triangle (sans translation!!!!!)**
+
+![Alt text](utilities/images/snubsquare.png)

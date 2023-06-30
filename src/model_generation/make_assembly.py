@@ -478,54 +478,61 @@ def assemble_model_2d(test, paths, step_list):
                             by number : 0 -> x or y minimal (it increases going to the right for top and botoom sides and to the top for left aand right sides)
 
     """
-    a = model.rootAssembly
-    try:
-        a.features['specimen'].suppress()
-    except:
-        pass
+    if test['sample_name'] in ['snubsquare', 'snubsquare2']:
+        mdb.models['Model-1'].parts.changeKey(fromName='specimen', toName='sample')
+        mdb.models['Model-1'].rootAssembly.features.changeKey(fromName='specimen-1', 
+            toName='sample')
 
-    # Recover the skipped cylinders
-    geometry_name = '2d'+'_'.join([str(test[i]) for i in ['sample_name',
-                                                          'geo_parameters', 'trans_rot', 'thickness', 'corner_cleaner']])
-    skip_cylinders = []
-    with open(os.path.join(paths[SAMPLE_BANK_DIR], '{}_skip_cyl.csv'.format(geometry_name)), "r") as f:
-        reader = csv.reader(f, delimiter=',')
-        for row in reader:
-            skip_cylinders.append(map(int, row))
+        skip_cylinders = [[],[],[],[]]
+    else:
+        a = model.rootAssembly
+        try:
+            a.features['specimen'].suppress()
+        except:
+            pass
 
-    mdb.openAcis(os.path.join(paths[SAMPLE_BANK_DIR], '{}.sat'.format(
-        geometry_name)), scaleFromFile=OFF)
+        # Recover the skipped cylinders
+        geometry_name = '2d'+'_'.join([str(test[i]) for i in ['sample_name',
+                                                            'geo_parameters', 'trans_rot', 'thickness', 'corner_cleaner']])
+        skip_cylinders = []
+        with open(os.path.join(paths[SAMPLE_BANK_DIR], '{}_skip_cyl.csv'.format(geometry_name)), "r") as f:
+            reader = csv.reader(f, delimiter=',')
+            for row in reader:
+                skip_cylinders.append(map(int, row))
 
-    model.PartFromGeometryFile(
-        combine=False, dimensionality=TWO_D_PLANAR, geometryFile=mdb.acis,
-        name='sample', type=DEFORMABLE_BODY)
+        mdb.openAcis(os.path.join(paths[SAMPLE_BANK_DIR], '{}.sat'.format(
+            geometry_name)), scaleFromFile=OFF)
 
-    model.Material(name='material-1')
-    model.materials['material-1'].Elastic(
-        table=((test['mat'][0], test['mat'][1]), ))
+        model.PartFromGeometryFile(
+            combine=False, dimensionality=TWO_D_PLANAR, geometryFile=mdb.acis,
+            name='sample', type=DEFORMABLE_BODY)
 
-    # Creates a section
-    # name of the section to be assigned to a body set
-    section_name = 'material-1' + '_Section'
-    model.HomogeneousSolidSection(
-        material='material-1', name=section_name, thickness=test['thickness'])
+        model.Material(name='material-1')
+        model.materials['material-1'].Elastic(
+            table=((test['mat'][0], test['mat'][1]), ))
 
-    # name of the set that will be created when assigning the section
-    p = mdb.models['Model-1'].parts['sample']
-    f = p.faces
-    faces = f.getByBoundingBox(-TOL, -TOL, 0.0,
-                               SIDE_LENGTH+TOL, SIDE_LENGTH+TOL, 0.0)
-    region = p.Set(faces=faces, name='sample')
-    p = mdb.models['Model-1'].parts['sample']
-    p.SectionAssignment(region=region, sectionName='material-1_Section',
-                        offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',
-                        thicknessAssignment=FROM_SECTION)
+        # Creates a section
+        # name of the section to be assigned to a body set
+        section_name = 'material-1' + '_Section'
+        model.HomogeneousSolidSection(
+            material='material-1', name=section_name, thickness=test['thickness'])
 
-    # ---------------------------------------------------------------------------------
-    # Assembly
-    a1 = model.rootAssembly
-    p = model.parts['sample']
-    a1.Instance(name='sample', part=p, dependent=ON)
+        # name of the set that will be created when assigning the section
+        p = mdb.models['Model-1'].parts['sample']
+        f = p.faces
+        faces = f.getByBoundingBox(-TOL, -TOL, 0.0,
+                                SIDE_LENGTH+TOL, SIDE_LENGTH+TOL, 0.0)
+        region = p.Set(faces=faces, name='sample')
+        p = mdb.models['Model-1'].parts['sample']
+        p.SectionAssignment(region=region, sectionName='material-1_Section',
+                            offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',
+                            thicknessAssignment=FROM_SECTION)
+
+        # ---------------------------------------------------------------------------------
+        # Assembly
+        a1 = model.rootAssembly
+        p = model.parts['sample']
+        a1.Instance(name='sample', part=p, dependent=ON)
 
     # Step
     step0_name = 'Initial'
