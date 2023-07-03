@@ -9,8 +9,6 @@ try:
 except:
     pass
 import os
-import time
-import csv
 from numpy import nan
 import numpy as np
 from post_extract import field, attachment_point

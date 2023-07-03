@@ -1,6 +1,6 @@
 from multiprocessing import Pool
 import time
-from func import func
+import func
 import sys
 from subprocess import check_call
 import os

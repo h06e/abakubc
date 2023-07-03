@@ -219,6 +219,48 @@ mdb.models['Model-1'].boundaryConditions['BC-1'].setValuesInStep(
     stepName='Step-3', u2=0.0)
 mdb.models['Model-1'].boundaryConditions['BC-2'].setValuesInStep(
     stepName='Step-3', u1=0.02)
+# * Field output for nodes and elements
+avg_stress_set_name = 'Avg_Stress_Node_Set'
+p = mdb.models['Model-1'].parts['Part-1']
+n = p.nodes
+num = 4 # Matched with the 8p x 8p are of the machine
+nodes = n.getByBoundingBox(SIDE_LENGTH/2.0 - DIST_BETWEEN_CENTERS * (num+1) - TOL,
+                            SIDE_LENGTH/2.0 - DIST_BETWEEN_CENTERS *
+                            (num+1) - TOL,
+                               -0.1,
+                               SIDE_LENGTH/2.0 +
+                               DIST_BETWEEN_CENTERS * (num+1) + TOL,
+                               SIDE_LENGTH/2.0 + DIST_BETWEEN_CENTERS *
+                               (num+1) + TOL,  0.1)
+p.Set(nodes=nodes, name=avg_stress_set_name)
+set_name = 'Avg_S_E_nodes'
+regionDef = mdb.models['Model-1'].rootAssembly.allInstances['Part-1'].sets[avg_stress_set_name]
+mdb.models['Model-1'].FieldOutputRequest(name=set_name,
+                                            createStepName='Step-1', variables=(
+                                                'S', 'E', 'U', 'EVOL', 'COORD'),
+                                            region=regionDef, sectionPoints=DEFAULT, position=NODES, rebar=EXCLUDE)
+# Same for the elements
+avg_stress_set_name = 'Avg_Stress_Element_Set'
+p = mdb.models['Model-1'].parts['Part-1']
+n = p.elements
+elements = n.getByBoundingBox(SIDE_LENGTH/2.0 - DIST_BETWEEN_CENTERS * (num+1) - TOL,
+                                SIDE_LENGTH/2.0 - DIST_BETWEEN_CENTERS *
+                                (num+1) - TOL,
+                                -0.1,
+                                SIDE_LENGTH/2.0 + DIST_BETWEEN_CENTERS *
+                                (num+1) + TOL,
+                                SIDE_LENGTH/2.0 + DIST_BETWEEN_CENTERS *
+                                (num+1) + TOL, 0.1
+                                )
+p.Set(elements=elements, name=avg_stress_set_name)
+set_name = 'Avg_S_E_elements'
+regionDef = mdb.models['Model-1'].rootAssembly.allInstances['Part-1'].sets[avg_stress_set_name]
+mdb.models['Model-1'].FieldOutputRequest(name=set_name, createStepName='Step-1',
+                                        variables=('S', 'E', 'EVOL', 'COORD'), region=regionDef, sectionPoints=DEFAULT,
+                                        rebar=EXCLUDE)
+
+
+# * Making and saving the job
 
 job_name ='KUBC_'+'_'.join([str(test[i]) for i in ['sample_name', 'geo_parameters', 'mat', 'trans_rot']]).replace('.', '%')
 for char in ['(', ')', ' ']:

@@ -1,10 +1,11 @@
 import os
-import func.manipulation as manipulation
 from constants import *
 import time
 import json
 import pandas as pd
 from pathlib import Path
+import csv
+
 
 def get_tests_to_compute(campagne):
     tests_to_run = []
@@ -13,9 +14,20 @@ def get_tests_to_compute(campagne):
             tests_to_run.append(test)
     return tests_to_run
 
+def read_campagne(file_name):
+    tests=[]
+    with open(f'{file_name}.csv', "r") as f:
+        reader = csv.reader(f,delimiter=';',)
+        header=next(reader)
+        for row in reader:
+            test_line={}
+            for idx,parameter in enumerate(row):
+                test_line[header[idx]]=parameter
+            tests.append(test_line)
+    return header,tests
 
 def init_campagne(campagne_name):
-    header, campagne = manipulation.read_campagne(campagne_name)
+    header, campagne = read_campagne(campagne_name)
     root=os.path.abspath(os.getcwd())
     campagne_folder= os.path.join(root, campagne_name)
     paths={
@@ -40,7 +52,7 @@ def update_campagne(paths,campagne_name):
     """Update the campaign csv with the tests which have been completed"""
     results_path=Path(campagne_name)/'results'
     completed_tests=list(results_path.glob('**/final_data.json'))
-    header, campagne = manipulation.read_campagne(os.path.join(paths[ROOT],campagne_name))
+    header, campagne = read_campagne(os.path.join(paths[ROOT],campagne_name))
 
     for file in completed_tests:
         # data=json.load(open(file,'r'))
